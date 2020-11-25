@@ -1,0 +1,28 @@
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
+
+import axios from 'axios'
+
+import './css/normalize.css'
+import 'element-ui/lib/theme-chalk/index.css'
+import '@/assets/font/iconfont.css'
+
+
+import Echarts from 'echarts'
+import Element from 'element-ui'
+
+Vue.prototype.echarts = Echarts
+Vue.prototype.$axios = axios
+
+Vue.use(Echarts)
+Vue.use(Element)
+
+Vue.config.productionTip = false
+
+new Vue({
+  router,
+  store,
+  render: h => h(App)
+}).$mount('#app')
