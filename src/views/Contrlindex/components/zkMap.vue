@@ -74,17 +74,18 @@
       // },
       // 显示各省地图，这里使用axios请求本地文件，provice文件夹存在的位置为public/province（旧版本是static）
       getProvinceMapOpt (provinceAlphabet) {
+        this.$store.commit('isChina',false);    // 改变质保信息显示，为省级
+
         axios.get('province/' + provinceAlphabet + '.json').then((s) => {
-
-
           echarts.registerMap(provinceAlphabet, s.data)
           const option = this.getMapOpt(provinceAlphabet)
           this.map.setOption(option, true);
 
           this.map.off('click');
           this.map.on('click',(param) => {
+            this.$store.commit('isChina',false);// 改变质保信息显示，为省级
 
-            if(this.historyPlaceRecord.count<2) this.historyPlaceRecord.count ++;
+            if(this.historyPlaceRecord.count<2) this.historyPlaceRecord.count ++;   // 地图返回
             // 使用高德地图api将名字转为adcode
             let key = "89bdfc2779ab66544defb8f8b81258d6";
             // 请求下一级数据
@@ -102,10 +103,12 @@
           })
         })
       },
-      initMap () {
-        var dom = document.getElementById('left_map')
-        this.map = echarts.init(dom)
-        const option = this.getMapOpt()
+      initMap () {  // 加载全国地图
+        this.$store.commit('isChina',true);
+
+        var dom = document.getElementById('left_map');
+        this.map = echarts.init(dom);
+        const option = this.getMapOpt();
         if (option && typeof option === 'object') {
           this.map.setOption(option, true)
         }

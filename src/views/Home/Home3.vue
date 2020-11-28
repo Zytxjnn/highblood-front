@@ -2,11 +2,13 @@
   <div id="home">
       <Header :title="pageTitle" />
       <div id="charts">
-          <div class="charts-item" style="height: 20rem;width: 26rem;" v-for="item in datas">
+          <div class="charts-item" style="height: 100%;width:100%;" v-for="item in datas">
 
           </div>
       </div>
       <Sidebar/>
+      <pre-button/>
+      <next-button/>
   </div>
 </template>
 
@@ -16,6 +18,7 @@ import preButton from "./Components/preButton";
 import nextButton from "./Components/nextButton";
 import Date from '@/components/Date';
 import Sidebar from "@/components/Sidebar";
+
 
 
 export default {
@@ -61,10 +64,11 @@ export default {
             text:'1.高血压整治例数',
             textStyle:{
               color:'#FFF',
-              fontWeight:'200'
+              fontWeight:'200',
+              fontSize:14
             },
             padding:[
-                12.31,1000,10,10
+              5,1000,5,20
             ],
             backgroundColor:'#3A3D75'
           },
@@ -73,6 +77,8 @@ export default {
             name:'月',
             data: ['19.04', '05', '06', '07','08', '09', '10', '11', '12','01', '02','20.04'],
             axisLabel:{
+              interval:0,
+              rotate:40,
               color:(e) => {
                 return e.length > 2 ? '#19B0FF' :'#D6D7ED'
               },
@@ -191,19 +197,23 @@ export default {
     #home{
         height: 100%;
         overflow-y: scroll;
-
         background-image: url("~@/assets/数据概览/bj.png");
     }
 
     #charts{
-        padding:0 3.75rem;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap:wrap;
+        padding:1.88rem 3.75rem;
+        display: grid;
+        grid-template-columns: repeat(4,23%);
+        grid-template-rows: repeat(3,15rem);
+        grid-row-gap: 1.88rem;
+        grid-column-gap: 2.5rem;
+        /*display: flex;*/
+        /*justify-content: space-between;*/
+        /*flex-wrap:wrap;*/
     }
 
     #charts .charts-item{
-        padding-top: 1.88rem;
+
     }
 
 </style>

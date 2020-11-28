@@ -93,16 +93,21 @@
       background-size: 100% 15.63rem;
     }
 
+    .title{
+        display: flex;
+        justify-content: space-between;
+    }
     .methods{
         display: flex;
         border: 1px solid #00FFFF;
+        height: 1.25rem;
     }
 
     .methods div{
         text-align: center;
         cursor: pointer;
         width: 4rem;
-        height: 1.25rem;
+        height: 100%;
         box-sizing: border-box;
         
         

@@ -18,9 +18,9 @@
                 <Title title="质控分数排名" >
                 </Title>
                 <div class="methods">
-                    <div :class="[currentDataIndex === 0 ? 'active' : '']" @click="LupdataRankInfo('province')">省</div>
-                    <div :class="[currentDataIndex === 1 ? 'active' : '']" @click="LupdataRankInfo('city')">市</div>
-                    <div :class="[currentDataIndex === 2 ? 'active' : '']" @click="LupdataRankInfo('lianti')">医联体</div>
+                    <div :class="[currentDataIndex1 === 0 ? 'active1' : '']" @click="LupdataRankInfo('province')">省</div>
+                    <div :class="[currentDataIndex1 === 1 ? 'active1' : '']" @click="LupdataRankInfo('city')">市</div>
+                    <div :class="[currentDataIndex1 === 2 ? 'active1' : '']" @click="LupdataRankInfo('lianti')">医联体</div>
                 </div>
             </div>
             <Rank/>
@@ -53,9 +53,9 @@
                 <Title title="填报总数排名" >
                 </Title>
                 <div class="methods">
-                    <div :class="[currentDataIndex === 0 ? 'active' : '']" @click="RupdataRankInfo('province')">省</div>
-                    <div :class="[currentDataIndex === 1 ? 'active' : '']" @click="RupdataRankInfo('city')">市</div>
-                    <div :class="[currentDataIndex === 2 ? 'active' : '']" @click="RupdataRankInfo('lianti')">医联体</div>
+                    <div :class="[currentDataIndex2 === 0 ? 'active2' : '']" @click="RupdataRankInfo('province')">省</div>
+                    <div :class="[currentDataIndex2 === 1 ? 'active2' : '']" @click="RupdataRankInfo('city')">市</div>
+                    <div :class="[currentDataIndex2 === 2 ? 'active2' : '']" @click="RupdataRankInfo('lianti')">医联体</div>
                 </div>
             </div>
              <Rank2/>
@@ -99,7 +99,8 @@ export default {
   },
   data(){
     return {
-      currentDataIndex:0,
+      currentDataIndex1:0,
+      currentDataIndex2:0,
       LisrankLoading:false,  // 左下角数据是否正在加载
       RisrankLoading:false, // 右边数据是否正在加载
       pageTitle:'全国高血压质控管理平台',
@@ -207,7 +208,7 @@ export default {
     },
     LupdataRankInfo(area){
         this.LisrankLoading = true;  // 显示加载框
-        this.currentDataIndex = area === 'province' ? 0 : 1;  // 按钮样式切换
+        this.currentDataIndex1 = area === 'province' ? 0 : 1;  // 按钮样式切换
 
         this.$axios.get(`https://easy-mock.com/mock/5f8bbcd9b260f247acdf2c06/gaoxueya/${area}`).then(res => {
           //   this.$store.commit('setlRank',res.data.lRank);
@@ -217,7 +218,7 @@ export default {
     },
     RupdataRankInfo(area){
         this.RisrankLoading = true;  // 显示加载框
-        this.currentDataIndex = area === 'province' ? 0 : 1;  // 按钮样式切换
+        this.currentDataIndex2 = area === 'province' ? 0 : 1;  // 按钮样式切换
 
         this.$axios.get(`https://easy-mock.com/mock/5f8bbcd9b260f247acdf2c06/gaoxueya/${area}`).then(res => {
           //   this.$store.commit('setlRank',res.data.lRank);
@@ -322,6 +323,7 @@ export default {
       background-image: url('~@/assets/数据概览2/右下.png');
       width: 100%;
       background-size:100% 100%;
+      height: 108vh;
     }
 
     .title{
@@ -334,6 +336,7 @@ export default {
         display: flex;
         border: 0.0625rem solid #00FFFF;
         border-radius: 0.1875rem;
+        height: 1.25rem;
     }
 
     .methods div{
@@ -341,8 +344,8 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        width: 4rem;
-        height: 1.25rem;
+        width: 3rem;
+        height: 100%;
         box-sizing: border-box;
         
         
@@ -351,10 +354,13 @@ export default {
         color:#fff;
     }
 
-    .active{
+    .active1{
       background-color: #084ecc;
     }
 
+      .active2{
+          background-color: #084ecc;
+      }
     .el-col{
         padding-top: 2rem;
     }

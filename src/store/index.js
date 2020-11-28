@@ -117,15 +117,20 @@ export default new Vuex.Store({
     operatePage:{
       left:true,
       right:false
-    }
+    },
+    isChina:true, // 质控指标显示数据是否是全国
   },
   mutations: {
     setlRank(state,lRank){
       state.lRank = lRank;
       return state;
     },
-    setlRank(state,rRank){
+    setrRank(state,rRank){
       state.rRank = rRank;
+      return state;
+    },
+    isChina(state,bool){
+      state.isChina = bool;
       return state;
     }
   },

@@ -5,6 +5,7 @@
             <div class="count">全国<span>{{data.count}}</span>例</div>
         </div>
         <div class="icon"></div>
+        <div class="iconfont icon-gengduo"></div>
     </div>
 </template>
 
@@ -28,8 +29,10 @@
 
 <style scoped>
     .chinaItem{
+        position: relative;
         display: flex;
         justify-content: space-between;
+
         box-sizing: border-box;
         margin: 0 2.5rem 1.88rem 0;
         width:100%;
@@ -62,5 +65,13 @@
         font-weight: bolder;
         font-size: 1.25rem;
         color: #008599;
+    }
+
+    .icon-gengduo{
+        position: absolute;
+        right: 0.2rem;
+        top: 0.25rem;
+        color:#008599;
+        font-size: 1.5rem;
     }
 </style>

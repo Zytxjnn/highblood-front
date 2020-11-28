@@ -54,7 +54,7 @@ import Title from "@/views/Home/Components/Title";
         text-align: center;
         box-sizing: border-box;
         border-right:1px solid #01D8FE;
-        font-size: 1rem;
+        font-size: 0.85rem;
         width: 50%;
         color:#fff;
         margin: 0.63rem 0;
