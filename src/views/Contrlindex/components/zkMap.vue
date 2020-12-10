@@ -1,7 +1,11 @@
 <template>
     <div class="zkmap row-flex-start" style="width:100%;height:40rem">
-        <div class="left_map" id="left_map" ></div>
-        <div class="back" @click="mapBack">返回</div>
+        <div class="left_map" id="left_map"
+             v-loading='isLoading'
+             element-loading-text="拼命加载中"
+             element-loading-spinner="el-icon-loading"
+             element-loading-background="rgba(0, 0, 0, 0.8)"  ></div>
+        <div class="back" v-show="$store.state.province" @click="mapBack">返回</div>
     </div>
 </template>
 
@@ -12,6 +16,9 @@
   echarts.registerMap('china', china);
   var provinces = ['shanghai', 'hebei', 'shanxi', 'neimenggu', 'liaoning', 'jilin', 'heilongjiang', 'jiangsu', 'zhejiang', 'anhui', 'fujian', 'jiangxi', 'shandong', 'henan', 'hubei', 'hunan', 'guangdong', 'guangxi', 'hainan', 'sichuan', 'guizhou', 'yunnan', 'xizang', 'shanxi1', 'gansu', 'qinghai', 'ningxia', 'xinjiang', 'beijing', 'tianjin', 'chongqing', 'xianggang', 'aomen', 'taiwan']
   var provincesText = ['上海', '河北', '山西', '内蒙古', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西', '海南', '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆', '北京', '天津', '重庆', '香港', '澳门', '台湾']
+
+  import {getCoreDetail} from "@/utils/api";
+
   export default {
     created () {
     },
@@ -21,6 +28,7 @@
     data () {
       return {
         map: {},
+        isLoading:true,
         historyPlaceRecord:{
           name:'',
           count:0
@@ -73,17 +81,56 @@
       //   // this.map.setOption(option, true)
       // },
       // 显示各省地图，这里使用axios请求本地文件，provice文件夹存在的位置为public/province（旧版本是static）
-      getProvinceMapOpt (provinceAlphabet) {
-        this.$store.commit('isChina',false);    // 改变质保信息显示，为省级
+      getProvinceMapOpt (provinceAlphabet,provincesText) {
+
+        this.$store.commit('isChina',false);    // 改变质控信息显示，为省级
+
+        this.isLoading = true;
+
+        this.$store.state.province = provincesText;
+        this.$store.state.area_type = 2;
+        this.$store.state.zkTitle = provincesText+'省';
+
+        const params = new URLSearchParams();
+        params.append('area_type',this.$store.state.area_type);
+        params.append('province',provincesText);
+        params.append('start','2020-11');
+        params.append('end','2020-11');
+        this.$axios.post(getCoreDetail,params).then(res => {
+          this.$store.state.subItem = res.data.data;
+        });
+
+        this.getRank(1);
 
         axios.get('province/' + provinceAlphabet + '.json').then((s) => {
-          echarts.registerMap(provinceAlphabet, s.data)
-          const option = this.getMapOpt(provinceAlphabet)
+
+          echarts.registerMap(provinceAlphabet, s.data);
+          const option = this.getMapOpt(provinceAlphabet);
           this.map.setOption(option, true);
+
+          this.isLoading = false;
 
           this.map.off('click');
           this.map.on('click',(param) => {
-            this.$store.commit('isChina',false);// 改变质保信息显示，为省级
+            this.isLoading = true;
+            // this.$store.commit('isChina',false);// 改变质保信息显示，为省级
+            this.$store.state.zkTitle = param.name;
+            this.$store.state.city = param.name;
+            this.$store.state.area_type = 3;
+
+            // 获取质控指标区域指标 start
+            const params = new URLSearchParams();
+            params.append('area_type',this.$store.state.area_type);
+            params.append('city',param.name);
+            params.append('start','2020-11');
+            params.append('end','2020-11');
+            this.$axios.post(getCoreDetail,params).then(res => {
+              this.$store.state.subItem = res.data.data;
+            });
+            // 获取质控指标区域指标 end
+
+
+            this.getRank(2);
 
             if(this.historyPlaceRecord.count<2) this.historyPlaceRecord.count ++;   // 地图返回
             // 使用高德地图api将名字转为adcode
@@ -94,17 +141,27 @@
               let adcode = s.data.districts[0].adcode; // 获取adcode
 
               axios.get('city/'+adcode+'.json').then(s => { // 根据code请求地图json，渲染地图
+
                 echarts.registerMap(provinceAlphabet, s.data)
                 const option = this.getMapOpt(provinceAlphabet)
 
                 this.map.setOption(option, true)
+                this.isLoading = false;
+
+                this.map.off('click');
+
+                 return false
               })
-            })
+            });
+
+
           })
         })
       },
       initMap () {  // 加载全国地图
         this.$store.commit('isChina',true);
+
+        this.isLoading = false;
 
         var dom = document.getElementById('left_map');
         this.map = echarts.init(dom);
@@ -131,24 +188,70 @@
           const provinceAlphabet = provinces[provinceIndex]
           this.historyPlaceRecord.name = provinceAlphabet;
           // 重新渲染各省份地图
-          this.getProvinceMapOpt(provinceAlphabet)
+          this.getProvinceMapOpt(provinceAlphabet,param.name)
         })
       },
       // 地图返回
       mapBack(){
-        if(this.historyPlaceRecord.count>0)this.historyPlaceRecord.count --;
+
+        this.isLoading = false; // 地图加载中
+
+        if(this.historyPlaceRecord.count>0) this.historyPlaceRecord.count --;
 
         if(this.historyPlaceRecord.count === 0){  // 返回到全国地图
+          this.$store.state.zkTitle = '全国'
+          this.$store.state.area_type = 1;
+          this.$store.state.province = '';
+
+
           this.initMap();
           this.historyPlaceRecord.name = '';
           return false;
         }
 
-        axios.get('province/'+this.historyPlaceRecord.name+'.json').then(s => { // 返回到省级地图
-          echarts.registerMap(this.historyPlaceRecord.name, s.data)
-          const option = this.getMapOpt(this.historyPlaceRecord.name)
-          this.map.setOption(option,true);
-          this.historyPlaceRecord.name = '';
+        const params = new URLSearchParams();
+        this.$store.state.area_type = 2;
+        this.$store.state.zkTitle = this.$store.state.province+'省';
+
+
+        params.append('area_type',this.$store.state.area_type);
+        params.append('province',this.$store.state.province);
+        params.append('start','2020-11');
+        params.append('end','2020-11');
+
+        this.$axios.post(getCoreDetail,params).then(res =>{
+          this.$store.state.subItem = res.data.data;
+          this.$store.state.city = '';
+        });
+
+        // axios.get('province/'+this.historyPlaceRecord.name+'.json').then(s => { // 返回到省级地图
+        //   echarts.registerMap(this.historyPlaceRecord.name, s.data)
+        //   const option = this.getMapOpt(this.historyPlaceRecord.name)
+        //   this.map.setOption(option,true);
+        //   this.isLoading = false;
+        // })
+        this.getProvinceMapOpt(this.historyPlaceRecord.name,this.$store.state.province);
+      },
+      getRank(data_type){
+        const params = new URLSearchParams();
+
+        params.append('data_type',data_type);
+        switch (data_type) {
+            case 1:
+              params.append('area_type',this.$store.state.area_type-1);
+              params.append('province',this.$store.state.province);
+            break;
+            case 2:
+              params.append('area_type',this.$store.state.area_type-2);
+              params.append('city',this.$store.state.city);
+            break;
+        }
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+
+
+        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
+          this.$store.state.zkRank = res.data.data;
         })
       }
     },

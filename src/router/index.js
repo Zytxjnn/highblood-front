@@ -4,6 +4,8 @@ import Home from '../views/Home/Home1.vue'
 import Home2 from '@/views/Home/Home2.vue'
 import Home3 from '@/views/Home/Home3.vue'
 import ControlIndex from "@/views/Contrlindex/ControlIndex";
+import MedicalConsortium from "@/views/Contrlindex/MedicalConsortium";
+import Hospital from "@/views/Contrlindex/Hospital";
 
 Vue.use(VueRouter);
 
@@ -26,6 +28,14 @@ const routes = [
   {
     path:'/controlindex',
     component:ControlIndex
+  },
+  {
+    path:'/medicalconsortium',
+    component:MedicalConsortium
+  },
+  {
+    path:'/hospital',
+    component:Hospital
   }
 ];
 

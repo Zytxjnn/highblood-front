@@ -1,8 +1,8 @@
 <template>
-    <div class="chinaItem">
+    <div class="chinaItem" @click="switchToConsortiumList">
         <div class="info">
-            <div class="title">{{index}}.{{data.title}}</div>
-            <div class="count">全国<span>{{data.count}}</span>例</div>
+            <div class="title">{{index}}.{{data.core_name}}</div>
+            <div class="count">全国<span>{{data.all_count}}</span>例</div>
         </div>
         <div class="icon"></div>
         <div class="iconfont icon-gengduo"></div>
@@ -22,6 +22,16 @@
       index:{
         type: Number,
         default:0
+      }
+    },
+    mounted() {
+
+    },
+    methods:{
+      switchToConsortiumList(){ // 显示医联体列表
+        this.$store.state.isConsortiumList = true;
+        this.$store.state.core_name = this.data.core;
+
       }
     }
   }

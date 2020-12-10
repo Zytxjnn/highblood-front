@@ -8,7 +8,7 @@
     methods:{
       switchPage(){
         let newNameNumbr = Number(this.$route.name.charAt(this.$route.name.length-1));
-        console.log(newNameNumbr);
+
         if(newNameNumbr === 1){ // 如果是第一页，显示提示信息
           this.$message({
             message: '已经是第一页了',

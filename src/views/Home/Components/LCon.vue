@@ -3,7 +3,7 @@
        <div class='zuoshang'>
           <Title title="标准版认证情况" />
         <div class="normal-info">
-            <normal-info :normal-data="normalData"/>
+            <normal-info/>
         </div>
        </div>
        <preButton/>
@@ -16,11 +16,11 @@
                 <Title title="通过认证数量排名" >
                 </Title>
             <div class="methods">
-                <div :class="[currentDataIndex === 0 ? 'active' : '']" @click="updataRankInfo('province')">省</div>
-                <div :class="[currentDataIndex === 1 ? 'active' : '']" @click="updataRankInfo('city')">市</div>
+                <div :class="[currentDataIndex === 0 ? 'active' : '']" @click="updataRankInfo(true)">省</div>
+                <div :class="[currentDataIndex === 1 ? 'active' : '']" @click="updataRankInfo(false)">市</div>
             </div>
           </div>
-            <rank/>
+            <rank :showProvince="showProvince" />
         </div>
     </div>
 </template>
@@ -43,42 +43,22 @@
       return{
         isrankLoading:false,
         currentDataIndex:0,
-        normalData:[
-          {
-            name:'通过认证牵头医院',
-            count:'90'
-          },
-          {
-            name:'认证中牵头医院',
-            count:'23'
-          },
-          {
-            name:'通过认证卫星医院',
-            count:'132'
-          },
-          {
-            name:'认证中卫星医院',
-            count:'12'
-          }
-        ]
+        showProvince: true
       }
     },
     created(){
-        // 初始请求rank数据
+
     },
     methods:{
       // 更新排行数据
-      updataRankInfo(area){
-        this.isrankLoading = true;  // 显示加载框
-        this.currentDataIndex = area === 'province' ? 0 : 1;  // 按钮样式切换
+      updataRankInfo(bool){
+        this.showProvince = bool;   // 省/市 显示
 
-        this.$axios.get(`https://easy-mock.com/mock/5f8bbcd9b260f247acdf2c06/gaoxueya/${area}`).then(res => {
-          //   this.$store.commit('setlRank',res.data.lRank);
-          this.isrankLoading = false; //  隐藏加载框
-          this.$store.dispatch('setlRank',res.data.lRank);
-        })
-      }
-    }
+        this.currentDataIndex = this.currentDataIndex === 0 ? 1 : 0;    // 省/市高亮
+      },
+
+    },
+
   }
 </script>
 

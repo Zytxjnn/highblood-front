@@ -13,16 +13,17 @@ import '@/assets/font/iconfont.css'
 import Echarts from 'echarts'
 import Element from 'element-ui'
 
-Vue.prototype.echarts = Echarts
-Vue.prototype.$axios = axios
+Vue.prototype.echarts = Echarts;
+Vue.prototype.$axios = axios;
 
-Vue.use(Echarts)
-Vue.use(Element)
 
-Vue.config.productionTip = false
+Vue.use(Echarts);
+Vue.use(Element);
+
+Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

@@ -31,18 +31,7 @@ export default {
     color:#fff;
   }
 
-  .el-progress{
-    width: 90% !important;
-  }
 
-  .el-progress-bar__inner{
-     background: linear-gradient(90deg, #0477D5, #01D9FE) !important;
-  }
-
-  .el-progress-bar__outer{
-    width: 100% !important;
-    background-color: #193F80 !important;
-  }
 
   ::-webkit-scrollbar{
     width: 10px;
@@ -61,4 +50,24 @@ export default {
 
     background:rgba(0,0,0,0.2);
   }
+
+  /* 覆盖element-ui样式*/
+
+  .el-collapse-item__header{
+    background-color: #ebebeb !important;
+  }
+
+  .el-collapse-item__header.is-active{
+    background-color: #fafafa !important;
+  }
+
+
+
+
+
+  .el-collapse-item__content {
+    background-color: #fafafa;
+  }
+
+
 </style>

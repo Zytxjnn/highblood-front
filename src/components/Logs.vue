@@ -3,7 +3,7 @@
         <Title title="实时在线操作记录"/>
         <div class="list">
             <div class="item"  v-for="item in logs">
-                {{item.location}}于:{{item.date}}:{{item.info}}
+                {{item.org_name}}于:{{item.add_time}}:新增病例
             </div>
         </div>
     </div>
@@ -29,8 +29,9 @@ import Title from "@/views/Home/Components/Title";
     methods:{
       // 请求数据
       async getData(){
-        const {data} = await this.$axios.get('https://easy-mock.com/mock/5ddb3ba9f2b7914af934a799/example/record');
-        this.logs = data.data.record;
+        const {data} = await this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/record');
+
+        this.logs = data.data;
       }
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-      <Header :title="pageTitle" />
+      <Header :title="this.$store.state.sjTitle+ '高血压达标中心质控管理平台'" />
       <div id="charts">
           <div class="charts-item" style="height: 100%;width:100%;" v-for="item in datas">
 
@@ -35,59 +35,75 @@ export default {
         colorList:['rgba(178, 242, 181, 0.3)','rgba(53, 186, 255, 0.3)','rgba(73, 126, 234, 0.3)'],
         colorIndex:[],
         datas:[0,1,2,3,4,5,6,7,8,9],
+        options:[]
       }
     },
-    mounted(){
-        this.getChartsData();
-    },
+   async mounted() {
+     console.log(this.$store.state.province)
+     await this.getChartsData();
+   },
     methods:{
-      async getChartsData(){
-        for(let i in this.datas){
-          let options = await this.getOptions();
-          let chart = this.echarts.init(document.getElementsByClassName('charts-item')[i]);
+        async getChartsData(){
+          const params = new URLSearchParams();
+          params.append('area_type',this.$store.state.area_type);
+          switch (this.$store.state.area_type) {
+            case 2:
+              params.append('province',this.$store.state.province);
+              break;
+            case 3:
+              params.append('city',this.$store.state.city);
+              break;
+          }
+          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreDetailForDataView',params)
+            .then(res => {
+              this.options =  res.data.data;
+              for(let i in this.datas){
+                let options =   this.setOptions(i);
+                let chart = this.echarts.init(document.getElementsByClassName('charts-item')[i]);
+                chart.setOption(options)
+              }
+            });
 
-          chart.setOption(options)
-        }
+
       },
-      async getOptions(){
-        // const {data} = await this.$axios.get('https://easy-mock.com/mock/5ddb3ba9f2b7914af934a799/example/options');
+      setOptions(i){
         const _this = this;
-        // return data.data.options;
-        return {
+
+        let option = {
           grid:{
             height:'65%',
-            bottom:'10%',
-            left:'15%',
+              bottom:'10%',
+              left:'15%',
           },
           title:{
             show:true,
-            text:'1.高血压整治例数',
-            textStyle:{
+              text:'1.高血压整治例数',
+              textStyle:{
               color:'#FFF',
-              fontWeight:'200',
-              fontSize:14
+                fontWeight:'200',
+                fontSize:14
             },
             padding:[
               5,1000,5,20
             ],
-            backgroundColor:'#3A3D75'
+              backgroundColor:'#3A3D75'
           },
           xAxis: {
             type: 'category',
-            name:'月',
-            data: ['19.04', '05', '06', '07','08', '09', '10', '11', '12','01', '02','20.04'],
-            axisLabel:{
+              name:'月',
+              data: ['19.04', '05', '06', '07','08', '09', '10', '11', '12','01', '02','20.04'],
+              axisLabel:{
               interval:0,
-              rotate:40,
-              color:(e) => {
+               
+                color:(e) => {
                 return e.length > 2 ? '#19B0FF' :'#D6D7ED'
               },
-              interval:0,
+
             },
             axisLine:{
-                lineStyle:{
-                  color:'#9A9CB8'
-                }
+              lineStyle:{
+                color:'#9A9CB8'
+              }
             },
             axisTick:{
               show:false
@@ -98,23 +114,8 @@ export default {
           },
           tooltip:{
             show:true,
-            trigger:'axis',
-            formatter:(data) => {
-              let myColor = `${_this.colorIndex[data[0].dataIndex]}`;
-              return `<div style="
-                                   display: flex;
-                                   flex-direction: column;
-                                   align-items: center;
-                                  border-radius:10%;border:0.1rem solid ${myColor};
-                                  color: ${_this.colorIndex[data[0].dataIndex]};
-                                  width: 6rem;text-align: center;
-                                  background-image: url("~@/assets/数据概览2/绿框.png")";
-                                 >
-
-                    50%</br>
-                    标准值:${data[1].value}
-                    </div>`;
-            }
+              trigger:'axis',
+              formatter:''
           },
           yAxis: [
             {
@@ -136,25 +137,21 @@ export default {
               },
               nameTextStyle:{
                 color:'#D6D7ED'
-              }
+              },
             },
             {
               show:false,
-              max:5000,
-              min:0,
-              interval:1000,
-
             }
           ],
-          legend: {
-            data: ['蒸发量', '平均温度']
-          },
+            legend: {
+          data: ['蒸发量', '平均温度']
+        },
           series: [
             {
-            data: [1200, 2000, 1500, 800, 700, 1100, 1300,4100, 2000, 3500, 800, 700],
-            type: 'bar',
-            barWidth:10,
-            itemStyle:{
+              data: [1200, 2000, 1500, 800, 700, 1100, 1300,4100, 2000, 3500, 800, 700],
+              type: 'bar',
+              barWidth:10,
+              itemStyle:{
                 normal:{
                   color:() => {
                     const colorList = ['rgba(178, 242, 181, 1)','rgba(53, 186, 255, 1)','rgba(73, 126, 234, 1)'];
@@ -165,12 +162,12 @@ export default {
                   },
                   barBorderRadius:[10,10,0,0]
                 }
+              },
+              showBackground: true,
+              backgroundStyle: {
+                barBorderRadius:[10,10,0,0]
+              }
             },
-            showBackground: true,
-            backgroundStyle: {
-              barBorderRadius:[10,10,0,0]
-            }
-          },
             {
               type: 'line',
               yAxisIndex: 1,
@@ -186,9 +183,106 @@ export default {
               }
             }
           ],
-          backgroundColor:'#22254C',
+            backgroundColor:'#22254C',
+        };
+
+
+
+        // 处理option start
+        option.title.text = this.options[i].core_name;
+        option.xAxis.data = this.options[i].x_list;
+        option.series[0].data = this.options[i].y_left_list;
+        option.series[1].data = this.options[i].y_right_list;
+        option.yAxis[0].name = this.options[i].core_unit.left;
+
+        var Min = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list]),
+          Max = this.calMax([this.options[i].y_left_list, this.options[i].y_right_list])
+
+        option.yAxis[0].max = Max;
+        option.yAxis[0].min = Min;
+        option.yAxis[0].interval = (Max-Min) / 5;
+
+        var Min2 = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list]),
+          Max2 = this.calMax([this.options[i].y_left_list, this.options[i].y_right_list])
+        option.yAxis[1].max = Max2;
+        option.yAxis[1].min = Min2;
+        option.yAxis[1].interval = (Max2-Min2) / 5;
+
+        if(this.options[i].core_unit.unit === 2){
+          option.tooltip.formatter =  (data) => {
+
+            let myColor = `${_this.colorIndex[data[0].dataIndex]}`;
+            return `<div style="
+                                   display: flex;
+                                   flex-direction: column;
+                                   align-items: center;
+                                  border-radius:10%;border:0.1rem solid ${myColor};
+                                  color: ${_this.colorIndex[data[0].dataIndex]};
+                                  width: 6rem;text-align: center;
+                                  background-image: url("~@/assets/数据概览2/绿框.png")";
+                                 >
+
+                    实际值:${_this.options[i].y_left_list[data[1].dataIndex]}%</br>
+                    标准值:${_this.options[i].y_right_list[data[1].dataIndex]}%
+                    </div>`;
+          }
+        }else{
+          option.tooltip.formatter =  (data) => {
+            let myColor = `${_this.colorIndex[data[0].dataIndex]}`;
+            return `<div style="
+                                   display: flex;
+                                   flex-direction: column;
+                                   align-items: center;
+                                  border-radius:10%;border:0.1rem solid ${myColor};
+                                  color: ${_this.colorIndex[data[0].dataIndex]};
+                                  width: 6rem;text-align: center;
+                                  background-image: url("~@/assets/数据概览2/绿框.png")";
+                                 >
+
+                     实际值:${_this.options[i].y_left_list[data[1].dataIndex]}</br>
+                    标准值:${_this.options[i].y_right_list[data[1].dataIndex]}
+                    </div>`;
+          }
         }
+
+
+
+
+
+        // 处理option end
+        return option;
+      },
+       calMax(arr){
+         let max = 0;
+         arr.forEach((el) => {
+           el.forEach((el1) => {
+             if (!(el1 === undefined || el1 === '')) {
+               if (max < el1) {
+                 max = el1;
+               }
+             }
+           })
+         })
+         let maxint = Math.ceil(max / 9);//不让最高的值超过最上面的刻度
+         let maxval = maxint * 10;//让显示的刻度是整数
+         return maxval;
+       },
+      calMin(arr){ // 计算最小值
+        let min = 0;
+        arr.forEach((el) => {
+          el.forEach((el1) => {
+            if (!(el1 === undefined || el1 === '')) {
+              if (min > el1) {
+                min = el1;
+              }
+            }
+          })
+        })
+        let minint = Math.floor(min / 10);
+        let minval = minint * 10;//让显示的刻度是整数
+        return minval;
       }
+
     }
 }
 </script>

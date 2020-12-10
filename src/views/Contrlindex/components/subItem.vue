@@ -1,20 +1,20 @@
 <template>
-    <div class="subItem">
+    <div class="subItem" @click="switchToConsortiumList">
         <div class="info">
-            <div class="title">{{index}}.{{data.title}}</div>
-            <div class="content">
+            <div class="title">{{index}}.{{data.core_name}}</div>
+            <div v-if="data.all_count !== 0" class="content">
                 <div>
                     <div style="display:flex;align-items: center">
-                         <span class="highlight">{{data.rank1}}</span>
-                         <span>/{{data.rank2}}</span>
+                         <span class="highlight">{{$store.state.zkRank[ikey].rank}}</span>
+                         <span>/{{$store.state.zkRank[ikey].count}}</span>
                     </div>
                     <div>
                         排名
                     </div>
                 </div>
                 <div>
-                    <div style="display:flex;align-items:center;">
-                        <span class="highlight">{{data.count1}}</span>
+                    <div style="display:flex;align-items:center;" v-if="$store.state.infoList[ikey]">
+                        <span class="highlight">{{$store.state.infoList[ikey].all_count}}</span>
                         <span>例</span>
                     </div>
                     <div>
@@ -23,7 +23,7 @@
                 </div>
                 <div>
                     <div style="display:flex;align-items:center;">
-                        <span class="highlight">{{data.count2}}</span>
+                        <span class="highlight">{{data.all_count}}</span>
                         <span>例</span>
                     </div>
                     <div>
@@ -31,6 +31,7 @@
                     </div>
                 </div>
             </div>
+            <div v-else>无数据</div>
         </div>
         <div class="icon"></div>
         <div class="iconfont icon-gengduo"></div>
@@ -50,6 +51,18 @@
       index:{
         type: Number,
         default:0
+      },
+      ikey:{
+        type:String,
+        require:true
+      }
+    },
+    mounted() {
+
+    },
+    methods:{
+      switchToConsortiumList(){ // 显示医联体列表
+        // this.$store.state.isConsortiumList = true;
       }
     }
   }

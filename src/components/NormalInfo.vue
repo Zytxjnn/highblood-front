@@ -11,12 +11,46 @@
 </template>
 
 <script>
+  import Logs from "./Logs";
+
   export default {
-    name: "NromalInfo",
-    props:{
-      normalData: {
-        type:Array,
-        require:true
+    name: "NormalInfo",
+    data(){
+      return {
+        normalData:[
+          {
+            name:'通过认证牵头医院',
+            count:100
+          },
+          {
+            name:'认证中牵头医院',
+            count:100
+          },
+          {
+            name:'通过认证卫星医院',
+            count:100
+          },
+          {
+            name:'认证中卫星医院',
+            count:100
+          }
+        ]
+      }
+    },
+    created() {
+      this.updataNormalInfoData();
+    },
+    methods:{
+      updataNormalInfoData(){
+        this.normalData[0].count = this.$store.state.content.sum_pass_unit_1;
+        this.normalData[1].count = this.$store.state.content.sum_build_unit_1;
+        this.normalData[2].count = this.$store.state.content.sum_pass_hospital_1;
+        this.normalData[3].count = this.$store.state.content.sum_build_hospital_1;
+      }
+    },
+    watch:{
+      "$store.state.content": function() {
+        this.updataNormalInfoData();
       }
     }
   }

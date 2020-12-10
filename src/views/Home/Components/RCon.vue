@@ -2,12 +2,16 @@
     <div id="rcon">
        <div class="youshang">
           <Title title="智享版认证情况" />
-          <normal-info :normalData="normalData" />
+          <Wisdom />
        </div>
       <nextButton/>
         <div class="youxia">
           <Title title="注册医院分类统计"  />
-          <div id="main" style="width: 85%;height:85%;">
+          <div id="main" style="width: 85%;height:85%;"
+               v-loading='isLoading'
+               element-loading-text="拼命加载中"
+               element-loading-spinner="el-icon-loading"
+               element-loading-background="rgba(0, 0, 0, 0.8)" >
           </div>
         </div>
     </div>
@@ -15,35 +19,19 @@
 
 <script>
     import Title from "./Title";
-    import NormalInfo from "@/components/NormalInfo";
+    import Wisdom from "./Wisdom";
     import nextButton from "./nextButton";
   export default {
     name: "RCon",
     components:{
       Title,
-      NormalInfo,
+      Wisdom,
       nextButton
     },
     data(){
       return {
-        normalData:[
-          {
-            name:'通过认证牵头医院',
-            count:'90'
-          },
-          {
-            name:'认证中牵头医院',
-            count:'23'
-          },
-          {
-            name:'通过认证卫星医院',
-            count:'132'
-          },
-          {
-            name:'认证中卫星医院',
-            count:'12'
-          }
-        ],
+
+        isLoading:true,
         option:{
           tooltip: {
             trigger: 'item',
@@ -83,9 +71,40 @@
         }
       }
     },
-    mounted() {
-      var myChart = this.echarts.init(document.getElementById('main'));
-      myChart.setOption(this.option)
+    async mounted() {
+        this.updataBing_content();
+    },
+    methods:{
+      updataNormalInfoData(){
+        this.normalData[0].count = this.$store.state.content.sum_pass_unit_2;
+        this.normalData[1].count = this.$store.state.content.sum_build_unit_2;
+        this.normalData[2].count = this.$store.state.content.sum_pass_hospital_2;
+        this.normalData[3].count = this.$store.state.content.sum_build_hospital_2;
+      },
+      updataBing_content(){
+        var myChart = this.echarts.init(document.getElementById('main'));
+
+        const {bing_content} = this.$store.state.content;
+
+
+
+        for(let i in bing_content){   // 获取数据后改变options
+
+          this.option.series[0].data[i].value = bing_content[i].y;
+          this.option.series[0].data[i].name = bing_content[i].x;
+        }
+
+        this.isLoading = false;   // 数据请求成功，隐藏加载框
+
+        myChart.setOption(this.option);
+      }
+    },
+    watch:{
+      "$store.state.content": function() {
+        this.updataNormalInfoData();
+
+        this.updataBing_content();
+      }
     }
   }
 </script>

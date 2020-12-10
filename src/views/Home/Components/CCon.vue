@@ -2,25 +2,43 @@
     <div id="ccon">
         <div class="container">
           <div class="list">
-            <div class="item" v-for="item in data">
+            <div class="item">
                 <div class="icon">
-                    <img src="../../../assets/数据概览/医院总数.png" alt="">
+                    <img src="../../../assets/数据概览/医联体.png" alt="">
                 </div>
                 <div class="info">
-                  <div class="name">{{item.name}}</div>
-                  <div class="number"><span>{{item.number}}</span>家</div>
+                  <div class="name">通过认证医联体</div>
+                  <div class="number"><span>{{this.$store.state.content.sum_pass_unit}}</span>家</div>
                 </div>
-          </div>
+            </div>
+              <div class="item">
+                  <div class="icon">
+                      <img src="../../../assets/数据概览/医院总数.png" alt="">
+                  </div>
+                  <div class="info">
+                      <div class="name">通过认证医院总数</div>
+                      <div class="number"><span>{{this.$store.state.content.sum_pass_hospital}}</span>家</div>
+                  </div>
+              </div>
+              <div class="item">
+                  <div class="icon">
+                      <img src="../../../assets/数据概览/注册.png" alt="">
+                  </div>
+                  <div class="info">
+                      <div class="name">注册医院总数</div>
+                      <div class="number"><span>{{this.$store.state.content.sum_register_hospital}}</span>家</div>
+                  </div>
+              </div>
           </div>
           <Map/>
         </div>
-        
-        
+
+
         <div id="chart" style="width: 100%;height: 200px;"
-        v-loading="loading"
-         element-loading-text="拼命加载中"
-         element-loading-spinner="el-icon-loading"
-         element-loading-background="rgba(0, 0, 0, 0.8)"
+             v-loading="$store.state.isLoading1"
+             element-loading-text="拼命加载中"
+             element-loading-spinner="el-icon-loading"
+             element-loading-background="rgba(0, 0, 0, 0.8)"
         ></div>
     </div>
 </template>
@@ -35,19 +53,19 @@ import Map from '@/components/Map'
     },
     data(){
       return {
-        loading:true,
+
         data:[
           {
             name:'通过认证医联体',
-            number:'1321'
+
           },
           {
             name:'通过认证医院总数',
-            number:'232'
+
           },
           {
             name:'注册医院总数',
-            number:'32'
+
           }
         ],
         cityData:[],
@@ -128,7 +146,7 @@ import Map from '@/components/Map'
             {
               name: '通过认证量',
               type: 'bar',
-             
+
               data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
               itemStyle: {
                 normal: {
@@ -148,40 +166,59 @@ import Map from '@/components/Map'
             realtime: true,
             type:'slider', // 有type这个属性，滚动条在最下面，也可以不行，写y：36，这表示距离顶端36px，一般就是在图上面。
             height: 10, // 表示滚动条的高度，也就是粗细
-            end: 80
+            end: 30
           }
         }
       }
     },
-    async mounted() {
+    async  mounted() {
       await this.getCityData();
-      this.drewChart()
-
+      this.drewChart();
     },
     methods:{
-      async getCityData(){    // 获取下方柱状图数据
-        let data = await this.$axios.get('https://easy-mock.com/mock/5ddb3ba9f2b7914af934a799/example/getCityData')
-        this.cityData = data.data.data;
+       getCityData(){    // 获取下方柱状图数据
+        const data = this.$store.state.content.zhu_info;
+        this.cityData = data;
+
       },
       // 渲染柱状图
      drewChart(){
         this.loading = false;   // 隐藏加载图示
 
+       let num = this.cityData.map(i => {
+         return i.num;
+       });
+        let build_num = this.cityData.map(i => {
+          return i.build_num;
+        });
         let pass_num = this.cityData.map(i => {
-          return i.pass_num;
+         return i.pass_num;
         });
-        let reg_num = this.cityData.map(i => {
-         return i.reg_num;
-        });
-       let state = this.cityData.map(i => {
-         return i.state;
+       let province = this.cityData.map(i => {
+         return i.province;
        });
 
        this.option.series[0].data = pass_num;
-       this.option.series[1].data = reg_num;
-       this.option.xAxis[0].data = state;
+       this.option.series[1].data = build_num;
+       this.option.series[2].data = num;
+       this.option.xAxis[0].data = province;
 
        let chart = this.echarts.init(document.getElementById('chart'));
+        chart.setOption(this.option);
+      },
+    },
+    watch:{
+      "$store.state.content": function() {
+         this.getCityData();
+        this.drewChart();
+      },
+      "$store.state.province": function(value) {
+        let chart = this.echarts.init(document.getElementById('chart'));
+        if(value){
+          this.option.title.text = '各市注册量、建设中、通过认证数量';
+        }else{
+          this.option.title.text = '各省注册量、建设中、通过认证数量';
+        }
         chart.setOption(this.option);
       }
     }

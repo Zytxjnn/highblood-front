@@ -1,8 +1,10 @@
 <template>
     <div id="index">
-        <Header :title="title"/>
+        <Header :title="$store.state.zkTitle"/>
         <Container/>
         <Legend/>
+        <Sidebar/>
+        <ControlRange v-show="$store.state.city" :type="1" />
     </div>
 </template>
 
@@ -10,17 +12,22 @@
 import Header from './components/Header'
 import Container from "./components/Container";
 import Legend from "./components/Legend";
+import Sidebar from "@/components/Sidebar";
+import ControlRange from "./components/ControlRange";
+
 
   export default {
     name: "ControlIndex",
     components:{
       Header,
       Container,
-      Legend
+      Legend,
+      Sidebar,
+      ControlRange
     },
     data(){
       return {
-        title:'全国高血压达标中心质控指标',
+
       }
     }
   }

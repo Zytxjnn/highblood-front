@@ -65,6 +65,7 @@ export default {
     },
     methods:{
       go(path){
+        this.$store.state.sidebar.left =false;
         this.$router.push(path)
       }
     }

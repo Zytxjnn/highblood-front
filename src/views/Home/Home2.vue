@@ -1,11 +1,14 @@
 <template>
   <div id="home">
-    <Header :title="pageTitle" />
+    <Header :title='this.$store.state.sjTitle+ "高血压达标中心质控管理平台"' />
     <div id="container">
       <el-row>
         <el-col :span="6">
           <preButton/>
-          <div class="blChart">
+          <div class="blChart"   v-loading='BlisLoding'
+               element-loading-text="拼命加载中"
+               element-loading-spinner="el-icon-loading"
+               element-loading-background="rgba(0, 0, 0, 0.8)">
             <Title title='病例填报状态' style="margin-bottom:0.5rem" />
             <div id="blChart" style="width: 95%;height:95%;"></div>
           </div>
@@ -18,18 +21,22 @@
                 <Title title="质控分数排名" >
                 </Title>
                 <div class="methods">
-                    <div :class="[currentDataIndex1 === 0 ? 'active1' : '']" @click="LupdataRankInfo('province')">省</div>
-                    <div :class="[currentDataIndex1 === 1 ? 'active1' : '']" @click="LupdataRankInfo('city')">市</div>
-                    <div :class="[currentDataIndex1 === 2 ? 'active1' : '']" @click="LupdataRankInfo('lianti')">医联体</div>
+                    <div :class="[this.$store.state.currentDataIndex1 === 0 ? 'active1' : '']" @click="LupdataRankInfo(1)">省</div>
+                    <div :class="[this.$store.state.currentDataIndex1 === 1 ? 'active1' : '']" @click="LupdataRankInfo(2)">市</div>
+                    <div :class="[this.$store.state.currentDataIndex1 === 2 ? 'active1' : '']" @click="LupdataRankInfo(3)">医联体</div>
                 </div>
             </div>
-            <Rank/>
+            <Rank3  />
           </div>
         </el-col>
         <el-col :span="12" >
           <div class="container">
              <div class="list">
-            <div class="item" v-for="item in data">
+            <div class="item" v-for="item in data"
+                 v-loading='isCountLoding'
+                 element-loading-text="拼命加载中"
+                 element-loading-spinner="el-icon-loading"
+                 element-loading-background="rgba(0, 0, 0, 0.8)">
                 <div class="icon">
                     <img src="@/assets/数据概览/医院总数.png" alt="">
                 </div>
@@ -53,12 +60,12 @@
                 <Title title="填报总数排名" >
                 </Title>
                 <div class="methods">
-                    <div :class="[currentDataIndex2 === 0 ? 'active2' : '']" @click="RupdataRankInfo('province')">省</div>
-                    <div :class="[currentDataIndex2 === 1 ? 'active2' : '']" @click="RupdataRankInfo('city')">市</div>
-                    <div :class="[currentDataIndex2 === 2 ? 'active2' : '']" @click="RupdataRankInfo('lianti')">医联体</div>
+                    <div :class="[currentDataIndex2 === 0 ? 'active2' : '']" @click="RupdataRankInfo(0)">省</div>
+                    <div :class="[currentDataIndex2 === 1 ? 'active2' : '']" @click="RupdataRankInfo(1)">市</div>
+                    <div :class="[currentDataIndex2 === 2 ? 'active2' : '']" @click="RupdataRankInfo(2)">医联体</div>
                 </div>
             </div>
-             <Rank2/>
+             <Rank2 :index="currentDataIndex2" />
           </div>
           <nextButton/>
         </el-col>
@@ -69,18 +76,17 @@
 </template>
 
 <script>
-import OperatePage from "@/components/OperatePage";
-import Header from "@/components/Header";
-import DouChart from "@/components/DoughnutChart";
-import {DoughnutChart,NormalInfo} from '@/utils/api.js';
-import Rank from  './Components/Rank'
-import Rank2 from  './Components/Rank2'
-import Title from  './Components/Title'
-import Map from '@/components/Map'
- import preButton from "./Components/preButton";
- import nextButton from "./Components/nextButton";
- import Logs from "@/components/Logs";
- import Sidebar from "@/components/Sidebar";
+    import OperatePage from "@/components/OperatePage";
+    import Header from "@/components/Header";
+    import DouChart from "@/components/DoughnutChart";
+    import Rank3 from  './Components/Rank3'
+    import Rank2 from  './Components/Rank2'
+    import Title from  './Components/Title'
+    import Map from '@/components/Map2'
+     import preButton from "./Components/preButton";
+     import nextButton from "./Components/nextButton";
+     import Logs from "@/components/Logs";
+     import Sidebar from "@/components/Sidebar";
 
 export default {
   name:'home2',
@@ -88,7 +94,7 @@ export default {
     Header,
     OperatePage,
     DouChart,
-    Rank,
+    Rank3,
     Title,
     Map,
     Rank2,
@@ -101,12 +107,13 @@ export default {
     return {
       currentDataIndex1:0,
       currentDataIndex2:0,
+      isCountLoding:true,
       LisrankLoading:false,  // 左下角数据是否正在加载
       RisrankLoading:false, // 右边数据是否正在加载
+      BlisLoding:true, // 病例填报状态
       pageTitle:'全国高血压质控管理平台',
-      normalInfoData:[],
+      scoreList:[],
       option:{
-         
           tooltip: {
             trigger: 'item',
             formatter: '{a} <br/>{b}: {c} ({d}%)'
@@ -122,14 +129,14 @@ export default {
           },
           graphic:{
             type:"text",
-                left:"30%",
-                top:"45%",
-                style:{
-                text:`填报总数
+            left:"30%",
+            top:"45%",
+            style:{
+            text:`填报总数
 12365例`,
-                fill:"#fff",
-                fontSize:16
-              }
+            fill:"#fff",
+            fontSize:16
+          }
           },
           color:['#1792E6','#94D4FF','#2B71FF'],
           series: [
@@ -175,56 +182,144 @@ export default {
             }
           ]
       },
-       data:[
+      data:[
           {
-            name:'通过认证医联体',
-            number:'1321'
+            name:'累计填报病例总数',
+            number:''
           },
           {
-            name:'通过认证医院总数',
-            number:'232'
+            name:'今日填报医院数量',
+            number:''
           },
           {
-            name:'注册医院总数',
-            number:'32'
+            name:'今日填报病例总数',
+            number:''
           }
       ],
-      logs:[
-        {
-          name:'苏州附属医院',
-          info:'新增病例'
-        }
-      ]
+      rankData:[]
     }
   },
-  mounted(){
+  async mounted(){
+    this.$store.state.province = '';
+    this.$store.state.city = '';
+    this.$store.state.sjTitle = '全国';
+
     this.initBlChart();
+    this.$store.state.currentDataIndex1 = 0;
+    this.getScoreList(1);
+
+    this.getAllCount();
   },
   methods:{
     // 初始化 病例填报状态
-    initBlChart(){
+    async initBlChart(){
         let chart = this.echarts.init(document.getElementById('blChart'));
-        chart.setOption(this.option);
-    },
-    LupdataRankInfo(area){
-        this.LisrankLoading = true;  // 显示加载框
-        this.currentDataIndex1 = area === 'province' ? 0 : 1;  // 按钮样式切换
+        const {data} = await this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count');
 
-        this.$axios.get(`https://easy-mock.com/mock/5f8bbcd9b260f247acdf2c06/gaoxueya/${area}`).then(res => {
-          //   this.$store.commit('setlRank',res.data.lRank);
-          this.LisrankLoading = false; //  隐藏加载框
-          this.$store.dispatch('setlRank',res.data.lRank);
-        })
-    },
-    RupdataRankInfo(area){
-        this.RisrankLoading = true;  // 显示加载框
-        this.currentDataIndex2 = area === 'province' ? 0 : 1;  // 按钮样式切换
+        this.BlisLoding = false;
 
-        this.$axios.get(`https://easy-mock.com/mock/5f8bbcd9b260f247acdf2c06/gaoxueya/${area}`).then(res => {
-          //   this.$store.commit('setlRank',res.data.lRank);
-          this.RisrankLoading = false; //  隐藏加载框
-          this.$store.dispatch('setlRank',res.data.rRank);
+        for(let i in data.data.count){
+          this.option.series[0].data[i].value =data.data.count[i].count;
+          this.option.series[0].data[i].name =data.data.count[i].name;
+        }
+        this.option.graphic.style.text = `填报总数
+ ${data.data.all_count}例`;
+
+      chart.setOption(this.option);
+    },
+    LupdataRankInfo(i){
+      this.$store.state.currentDataIndex1 = i-1;
+      this.getScoreList(i)
+    },
+    RupdataRankInfo(index){
+        this.RisrankLoading = true;
+        this.currentDataIndex2 = index; // 切换高亮
+        this.RisrankLoading = false;
+    },
+    getScoreList(data_type){
+      const params = new URLSearchParams();
+
+      params.append('area_type',this.$store.state.area_type);
+      params.append('data_type',data_type);
+
+      switch (this.$store.state.area_type) {
+        case 1: // 请求全国数据
+          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+            this.$store.state.scoreList = res.data.data;
+          });
+          break;
+        case 2: // 请求省级数据
+          params.append('province',this.$store.state.province);
+          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+            this.$store.state.scoreList = res.data.data;
+          });
+          break;
+        case 3: // 请求市级数据
+          if (data_type == 2){
+            params.append('province',this.$store.state.province);
+          }else{
+            params.append('city',this.$store.state.city);
+          }
+          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+            this.$store.state.scoreList = res.data.data;
+          });
+          break;
+      }
+    },
+    getAllCount(){
+      this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count').then(res => {
+        this.data[0].number = res.data.data.all_count;
+        this.data[1].number = res.data.data.today_count;
+        this.data[2].number = res.data.data.today_org;
+
+        this.isCountLoding = false;
+      })
+    }
+  },
+  watch:{
+    '$store.state.province'(val){
+
+      this.isCountLoding = true;
+      this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
+        params:{
+          province:this.$store.state.province,
+        }
+      }).then(res => {
+        this.data[0].number = res.data.data.all_count;
+        this.data[1].number = res.data.data.today_count;
+        this.data[2].number = res.data.data.today_org;
+
+        this.isCountLoding = false;
+      })
+    },
+    '$store.state.city'(val){
+
+      if(val === ''){
+        this.isCountLoding = true;
+        this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
+          params:{
+            province:this.$store.state.province,
+          }
+        }).then(res => {
+          this.data[0].number = res.data.data.all_count;
+          this.data[1].number = res.data.data.today_count;
+          this.data[2].number = res.data.data.today_org;
+
+          this.isCountLoding = false;
         })
+      }else{
+        this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
+          params:{
+            city:this.$store.state.city,
+          }
+        }).then(res => {
+          this.data[0].number = res.data.data.all_count;
+          this.data[1].number = res.data.data.today_count;
+          this.data[2].number = res.data.data.today_org;
+        })
+        this.isCountLoding = false;
+      }
+
     }
   }
 }
@@ -232,10 +327,9 @@ export default {
 
 <style scoped>
   #home{
-
     height: 100%;
     overflow-y: scroll;
-    background-image: url('../../assets/数据概览/bj.png');
+    background-image: url('~@/assets/数据概览/bj.png');
   }
 
   .el-col-12,.el-col-6{
@@ -323,7 +417,7 @@ export default {
       background-image: url('~@/assets/数据概览2/右下.png');
       width: 100%;
       background-size:100% 100%;
-      height: 108vh;
+      height: 98vh;
     }
 
     .title{
