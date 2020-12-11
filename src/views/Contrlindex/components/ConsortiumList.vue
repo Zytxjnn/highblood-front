@@ -1,14 +1,14 @@
 <template>
     <div id="Consortium">
         <el-collapse v-model="activeName">
-            <el-collapse-item v-for="(province,i,k) in data">
+            <el-collapse-item v-for="(province,proName,k) in data">
                 <template slot="title">
                     <div class="province-title">
-                        {{i}}({{province.length-1}}家)
+                        {{proName}}({{province.length-1}}家)
                     </div>
                 </template>
                 <div class="consortium-list">
-                    <div class="consortium-item" @click="goto(item.hospital)" v-for="(item,i) in province">
+                    <div class="consortium-item" @click="goto(item.hospital,proName)" v-for="(item,i) in province">
                         <div class="item-title">{{item.hospital}}</div>
 
                         <div class="item info">
@@ -129,8 +129,10 @@
           this.data = res.data.data;
         })
       },
-      goto(name){
-        this.$router.push(`/medicalconsortium?name=${name}`);
+      goto(name,province){
+        // this.$store.state.province = province;
+        // this.$router.push(`/medicalconsortium?name=${name}`);
+        this.$router.push(`/medicalconsortium?name=${name}&province=${province}`);
       }
     },
     watch:{

@@ -91,6 +91,7 @@
         this.$store.state.area_type = 2;
         this.$store.state.zkTitle = provincesText+'省';
 
+        // 与全国对比
         const params = new URLSearchParams();
         params.append('area_type',this.$store.state.area_type);
         params.append('province',provincesText);
@@ -130,6 +131,8 @@
             // 获取质控指标区域指标 end
 
 
+
+
             this.getRank(2);
 
             if(this.historyPlaceRecord.count<2) this.historyPlaceRecord.count ++;   // 地图返回
@@ -149,7 +152,6 @@
                 this.isLoading = false;
 
                 this.map.off('click');
-
                  return false
               })
             });
@@ -253,6 +255,22 @@
         this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
+      },
+      getInfoList(){
+        const params = new URLSearchParams();
+
+        params.append('area_type',this.$store.state.area_type);
+        if(this.$store.state.area_type === 2){
+          params.append('province',this.$store.state.provicne);
+        }
+        params.append('start','2020-11');
+        params.append('end','2020-11');
+        this.$axios.post(getCoreDetail,params).then(res => {
+          this.$store.state.infoList = res.data.data;
+          console.log(res.data.data)
+        })
+
+
       }
     },
     computed: {}

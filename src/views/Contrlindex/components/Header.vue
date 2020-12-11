@@ -19,7 +19,7 @@
 <!--                    </el-button>-->
                         <div id="dropdow">医联体</div>
                     <el-dropdown-menu slot="dropdown" style="left:1382px !important">
-                        <el-dropdown-item :command="{name:item.hospital_name,id:item.hospital_id}" v-for="item in hospitalList">{{item.hospital_name}}</el-dropdown-item>
+                        <el-dropdown-item :command="{name:item.hospital_name,id:item.hospital_id,index:1}" v-for="(item,i) in hospitalList">{{item.hospital_name}}</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
                 <img @click="dropdow" src="~@/assets/MedicalConsortium/箭头.png" alt="">
@@ -55,7 +55,13 @@
       }
     },
       mounted() {
+        const params = new URLSearchParams();
+        params.append('area_type',1);
+        params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
+        this.$axios.post(getHospitalList,params).then(res => {
+          this.hospitalList = res.data.data;
 
+        })
       },
       methods:{
         dropdow(){
@@ -66,13 +72,23 @@
           this.$store.state.area_type = 5;
 
 
-          this.$router.push({
-            path:'hospital',
-            query:{
-              name:e.name,
-              id:e.id
-            }
-          })
+          if(e.index === 0){
+            this.$router.push({
+              path:'medicalconsortium',
+              query:{
+                name:e.name,
+              }
+            })
+          }else{
+            this.$router.push({
+              path:'hospital',
+              query:{
+                name:e.name,
+                id:e.id,
+                province:this.$route.query.province
+              }
+            })
+          }
         }
       },
     watch:{

@@ -9,6 +9,8 @@
 </template>
 
 <script>
+    import {getCoreDetail} from '@/utils/api'
+
   export default {
     name: "ControlRange2",
     props:{
@@ -26,35 +28,46 @@
       }
     },
     mounted() {
+      this.getInfoList(1); // 对比
 
+      this.getRank(1);
     },
-    methods:{
-      sliderChange(e){
-        this.$store.state.area_type = e+1;
+    methods: {
+      sliderChange(e) {
+        this.$store.state.area_type = e + 1;
 
-        this.getRank()
+        this.getRank(e + 1);
+
+        this.getInfoList(e + 1); // 对比
+
       },
-      getRank(){
+      getRank(area_type) {
         const params = new URLSearchParams();
-        params.append('area_type',this.$store.state.area_type);
-        params.append('data_type',this.type+1);
-        switch (this.type+1) {
-          case 1:
-            params.append('province',this.$store.state.province);
+        params.append('area_type', area_type);
+        params.append('data_type', 4);
+        params.append('hospital_id', this.$route.query.id);
+        params.append('start', this.$store.state.start);
+        params.append('end', this.$store.state.end);
+        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank', params).then(res => {
+          this.$store.state.zkRank = res.data.data;
+        })
+      },
+      getInfoList(area_type) {
+        const params = new URLSearchParams();
+        params.append('area_type', area_type);
+        switch (area_type) {
+            case 2: // 省内对比
+              params.append('province',this.$route.query.province);
             break;
-          case 2:
-            params.append('city',this.$store.state.city);
-            break;
-          case 3:
-            params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
+            case 3: // 市内对比
+              params.append('city',this.$store.state.city);
             break;
         }
-        params.append('start',this.$store.state.start);
-        params.append('end',this.$store.state.end);
 
-
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
-          this.$store.state.zkRank = res.data.data;
+        params.append('start', '2020-11');
+        params.append('end', '2020-11');
+        this.$axios.post(getCoreDetail, params).then(res => {
+          this.$store.state.infoList = res.data.data;
         })
       }
     }

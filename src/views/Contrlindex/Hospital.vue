@@ -112,7 +112,7 @@
   import ControlRange2 from "./components/ControlRange2";
   import echarts from 'echarts'
 
-  import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
+  import { getHospitalJoinedList,getCoreDetail,getHospitalList,getScoreInfo,getScoreListForHospital} from '@/utils/api'
 
   export default {
     name: "Hospital",
@@ -309,12 +309,15 @@
 
       this.getData();
 
+      this.getScoreInfo();
 
+      // 医联体列表 下拉框
       const params = new URLSearchParams();
       params.append('area_type',1);
       params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
       this.$axios.post(getHospitalList,params).then(res => {
-        this.hospitalList = res.data.data;
+        this.$store.state.hospitalList = res.data.data;
+
       })
     },
     methods:{
@@ -328,6 +331,20 @@
             this.$store.state.subItem = res.data.data;
           })
       },
+      getScoreInfo(){   // 请求质控评分
+        const params = new URLSearchParams();
+        params.append('data_type',2);
+        params.append('hospital_id',this.id);
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+        this.$axios.post(getScoreInfo,params).then(res => {
+          this.rank[0].value = res.data.data[0].score+'分';
+          this.rank[1].value = res.data.data[0].country_rank;
+          this.rank[2].value = res.data.data[0].province_rank;
+          this.rank[3].value = res.data.data[0].city_rank;
+        })
+      },
+
       // getInfoList(){
       //   const params = new URLSearchParams();
       //   params.append('area_type',this.$store.state.area_type);
@@ -358,8 +375,8 @@
         })
 
       },
-      getCompOption(){  // 返回环比图options
-        return {
+      async getCompOption(){  // 返回环比图options
+         const option =  {
           backgroundColor:'',
           tooltip:{
             show:true,
@@ -409,6 +426,16 @@
             }
           }]
         };
+         const params = new URLSearchParams();
+         params.append('data_type',2);
+         params.append('hospital_id',this.id);
+         await this.$axios.post(getScoreListForHospital,params).then( res => {
+           option.xAxis.data = res.data.data.x_list;
+           option.series[0].data = res.data.data.y_list;
+
+         });
+        console.log(option)
+        return option;
       },
       format(percentage) {
         return percentage;
@@ -447,13 +474,13 @@
     }
 
     .controlScore{
-        background-image: url("../../assets/MedicalConsortium/controlScore.png");
+        background-image: url("~@/assets/MedicalConsortium/controlScore.png");
     }
     .rank1{
-        background-image: url("../../assets/MedicalConsortium/rank1.png");
+        background-image: url("~@/assets/MedicalConsortium/rank1.png");
     }
     .rank2{
-        background-image: url("../../assets/MedicalConsortium/rank2.png");
+        background-image: url("~@/assets/MedicalConsortium/rank2.png");
     }
 
     .date{

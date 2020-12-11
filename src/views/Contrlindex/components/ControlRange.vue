@@ -9,6 +9,8 @@
 </template>
 
 <script>
+    import {getCoreDetail} from '@/utils/api'
+
   export default {
     name: "ControlRange",
     props:{
@@ -29,36 +31,43 @@
       }
     },
     mounted() {
-
+      this.getInfoList(1); // 对比
     },
     methods:{
       sliderChange(e){
-        this.$store.state.area_type = e+1;
 
-        this.getRank()
+
+        this.getRank(e+1);
+
+        this.getInfoList(e+1); // 对比
+
       },
-      getRank(){
+      getRank(area_type){
         const params = new URLSearchParams();
-        params.append('area_type',this.$store.state.area_type);
-        params.append('data_type',this.type+1);
-        switch (this.type+1) {
-          case 1:
-            params.append('province',this.$store.state.province);
-            break;
-          case 2:
-            params.append('city',this.$store.state.city);
-            break;
-          case 3:
-            params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
-            break;
-        }
+        params.append('area_type',area_type);
+        params.append('data_type',2);
+        params.append('city',this.$store.state.city);
         params.append('start',this.$store.state.start);
         params.append('end',this.$store.state.end);
-
-
         this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
+      },
+      getInfoList(area_type){
+        const params = new URLSearchParams();
+
+        params.append('area_type',area_type);
+
+        params.append('province',this.$store.state.province);
+
+        params.append('start','2020-11');
+        params.append('end','2020-11');
+        this.$axios.post(getCoreDetail,params).then(res => {
+          this.$store.state.infoList = res.data.data;
+
+        })
+
+
       }
     }
   }

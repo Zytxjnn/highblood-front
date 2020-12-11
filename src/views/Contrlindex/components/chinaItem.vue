@@ -2,7 +2,13 @@
     <div class="chinaItem" @click="switchToConsortiumList">
         <div class="info">
             <div class="title">{{index}}.{{data.core_name}}</div>
-            <div class="count">全国<span>{{data.all_count}}</span>例</div>
+            <div class="count" v-if="data.all_count">
+                全国
+                <span v-if="data.unit === 3"> <span class="highlight">{{data.all_count}}</span> 例</span>
+                <span v-if="data.unit === 2"><span class="highlight">{{data.pass_percent}}</span> %</span>
+                <span v-if="data.unit === 1"><span class="highlight">{{data.avg_time}}</span> 分钟</span>
+            </div>
+            <div v-else>无数据</div>
         </div>
         <div class="icon"></div>
         <div class="iconfont icon-gengduo"></div>
@@ -71,7 +77,7 @@
         color:#323232;
     }
 
-    .count span{
+    .count .highlight{
         font-weight: bolder;
         font-size: 1.25rem;
         color: #008599;

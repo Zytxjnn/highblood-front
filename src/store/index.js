@@ -31,7 +31,8 @@ export default new Vuex.Store({
     zkRank:{},
     isChina:true, // 质控指标显示数据是否是全国
     isConsortiumList:false, // 质控指标显示数据是否是医联体列表
-    hospital_joined_id:null, // 质控指标 医联体列表
+    hospital_joined_id:null, // 质控指标 医联体id,
+    hospitalList:[],
   },
   mutations: {
     setlRank(state,lRank){

@@ -2,7 +2,7 @@
     <div class="subItem" @click="switchToConsortiumList">
         <div class="info">
             <div class="title">{{index}}.{{data.core_name}}</div>
-            <div v-if="data.all_count !== 0" class="content">
+            <div v-if="data.all_count != 0" class="content">
                 <div>
                     <div style="display:flex;align-items: center">
                          <span class="highlight">{{$store.state.zkRank[ikey].rank}}</span>
@@ -14,20 +14,24 @@
                 </div>
                 <div>
                     <div style="display:flex;align-items:center;" v-if="$store.state.infoList[ikey]">
-                        <span class="highlight">{{$store.state.infoList[ikey].all_count}}</span>
-                        <span>例</span>
+                        <span class="highlight">
+                            {{$store.state.infoList[ikey].unit === 1 ? $store.state.infoList[ikey].avg_time : $store.state.infoList[ikey].unit===2 ? $store.state.infoList[ikey].pass_percent:$store.state.infoList[ikey].all_count}}
+                        </span>
+                        <span>{{$store.state.infoList[ikey].unit === 1 ? '分钟' : $store.state.infoList[ikey].unit===2 ? '%' : '例'}}</span>
                     </div>
                     <div>
-                        全国
+                        {{ this.$store.state.area_type === 1 ? '全国' : this.$store.state.area_type === 2 ? '全省' : '全市'}}
                     </div>
                 </div>
                 <div>
                     <div style="display:flex;align-items:center;">
-                        <span class="highlight">{{data.all_count}}</span>
-                        <span>例</span>
+                        <span class="highlight">
+                            {{data.unit === 1 ? data.avg_time : data.unit===2 ? data.pass_percent:data.all_count}}
+                        </span>
+                        <span>{{data.unit === 1 ? '分钟' : data.unit===2 ? '%' : '例'}}</span>
                     </div>
                     <div>
-                        本省
+                       本地
                     </div>
                 </div>
             </div>

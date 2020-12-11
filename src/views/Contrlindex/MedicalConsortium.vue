@@ -58,11 +58,11 @@
                                 <div class="progress-month">
                                     {{item.month}}月
                                 </div>
-<!--                                <el-progress :class="'progress'+i"-->
-<!--                                             :stroke-width="20"-->
-<!--                                             :percentage="item.value"-->
-<!--                                             :format="format"-->
-<!--                                />-->
+                                <el-progress :class="'progress'+i"
+                                                :stroke-width="20"
+                                                :percentage="item.value"
+                                                :format="format"
+                            />
                             </div>
                             <div class="filled-amount">
                                 <div class="filled-amount-icon">
@@ -340,7 +340,8 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
           //   this.hospitalList = res.data.data;
           // })
 
-          this.getRank(3)
+          this.getRank(3);
+
           // this.getRank(4);
           // 请求质控指标信息
           const params2 = new URLSearchParams();
