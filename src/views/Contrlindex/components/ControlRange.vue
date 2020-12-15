@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import {getCoreDetail} from '@/utils/api'
+    import {getCoreDetail,getCoreRank} from '@/utils/api'
 
   export default {
     name: "ControlRange",
@@ -27,7 +27,8 @@
           0:'国内对比',
           1:'省内对比',
           2:'市内对比',
-        }
+        },
+        e:1,
       }
     },
     mounted() {
@@ -36,6 +37,7 @@
     methods:{
       sliderChange(e){
 
+        this.$store.state.contrast_area = e === 1 ? '全省' : '全国'
 
         this.getRank(e+1);
 
@@ -60,13 +62,25 @@
 
         params.append('province',this.$store.state.province);
 
-        params.append('start','2020-11');
-        params.append('end','2020-11');
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
         this.$axios.post(getCoreDetail,params).then(res => {
           this.$store.state.infoList = res.data.data;
 
         })
-
+      }
+    },
+    watch:{
+      '$store.state.start'(){
+          const params = new URLSearchParams();
+          params.append('area_type',1);
+          params.append('data_type',2);
+          params.append('city',this.$store.state.city);
+          params.append('start',this.$store.state.start);
+          params.append('end',this.$store.state.end);
+          this.$axios.post(getCoreRank,params).then(res => {
+            this.$store.state.zkRank = res.data.data;
+          })
 
       }
     }

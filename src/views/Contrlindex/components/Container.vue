@@ -25,7 +25,12 @@
 
 <style scoped>
     #container{
+        height: 100%;
         padding: 2rem;
         background-color: #fafafa;
+    }
+
+    /deep/ .el-row,.el-col{
+        height: 100%;
     }
 </style>

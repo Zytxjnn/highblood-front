@@ -54,7 +54,7 @@ export default {
               params.append('city',this.$store.state.city);
               break;
           }
-          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreDetailForDataView',params)
+          this.$axios.post('http://hbqc.ccpmc.org/QualityControlIndex/getCoreDetailForDataView',params)
             .then(res => {
               this.options =  res.data.data;
               for(let i in this.datas){

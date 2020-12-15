@@ -1,6 +1,6 @@
 <template>
     <div id="medicalconsortium">
-        <Header :isConsortium="true" :title="name" />
+        <Header :isConsortium="true" :title="$route.query.name" />
         <div class="container">
             <el-row>
                 <el-col :span="12">
@@ -96,6 +96,21 @@
                                   element-loading-text="拼命加载中"
                                   element-loading-spinner="el-icon-loading"
                                   element-loading-background="rgba(0, 0, 0, 0.2)"  />
+
+                      <div v-for="i in 9" v-if="JSON.stringify($store.state.subItem) === '[]'">
+                        <div class="subItem">
+                          <div class="info">
+                            <div class="title">{{i}}. {{subItems[i]}}</div>
+                            <div class="content">
+                              无数据
+                            </div>
+                          </div>
+                          <div class="icon">
+                            <img :src='"~@/assets/质控指标/icons/"+i+".png"' alt="">
+                          </div>
+                          <div class="iconfont icon-gengduo"></div>
+                        </div>
+                      </div>
                         <div class="none"></div>
                         <div class="none"></div>
                     </div>
@@ -103,6 +118,7 @@
             </el-row>
         </div>
         <ControlRange2 :type="2"/>
+      <Sidebar/>
     </div>
 </template>
 
@@ -110,21 +126,30 @@
   import Header from "./components/Header";
   import subItem from "./components/subItem";
   import ControlRange2 from "./components/ControlRange2";
+  import Sidebar from "@/components/Sidebar";
   import echarts from 'echarts'
 
-  import { getHospitalJoinedList,getCoreDetail,getHospitalList,getScoreInfo,getScoreListForHospital} from '@/utils/api'
+  import { getHospitalJoinedList,
+    getCoreDetail,
+    getHospitalList,
+    getScoreInfo,
+    getScoreListForHospital,
+    getTimeInfoByHospital} from '@/utils/api'
 
   export default {
     name: "Hospital",
     components:{
       Header,
       subItem,
-      ControlRange2
+      ControlRange2,
+      Sidebar
     },
     data(){
       return {
         isLoading:false,
         name:'',
+        subItems:['高血压诊治例数','继发性高血压（或）难治性高血压例数占比','诊断使用心电图','诊断使用动态血压监测',
+          '诊断尿白蛋白/肌酐比检测率','高血压达标率','高血压随访率','单片复方制剂使用率','高血压转诊率'],
         rank:[
           {
             name:'质控评分',
@@ -304,12 +329,16 @@
       this.id = this.$route.query.id;
 
       // 初始化图表
-      const compChart = this.echarts.init(document.getElementById('score-comp-chart'));
-      compChart.setOption(this.getCompOption());
+      this.getCompOption();
 
+      // 请求质控评分、市排名。。。
       this.getData();
 
+      // 对比信息
       this.getScoreInfo();
+
+      // 请求注册时间 通过认证时间
+      this.getTimeInfoByHospital();
 
       // 医联体列表 下拉框
       const params = new URLSearchParams();
@@ -317,8 +346,9 @@
       params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
       this.$axios.post(getHospitalList,params).then(res => {
         this.$store.state.hospitalList = res.data.data;
-
       })
+
+
     },
     methods:{
       getData(){    // 请求医院体信息
@@ -375,7 +405,7 @@
         })
 
       },
-      async getCompOption(){  // 返回环比图options
+       getCompOption(){  // 返回环比图options
          const option =  {
           backgroundColor:'',
           tooltip:{
@@ -429,20 +459,67 @@
          const params = new URLSearchParams();
          params.append('data_type',2);
          params.append('hospital_id',this.id);
-         await this.$axios.post(getScoreListForHospital,params).then( res => {
+         this.$axios.post(getScoreListForHospital,params).then( res => {
            option.xAxis.data = res.data.data.x_list;
            option.series[0].data = res.data.data.y_list;
 
+           const compChart = this.echarts.init(document.getElementById('score-comp-chart'));
+           compChart.setOption(option);
+
          });
-        console.log(option)
-        return option;
+      },
+      getTimeInfoByHospital(){
+        const name = this.name;
+        this.$axios.get(getTimeInfoByHospital,{
+          params:{
+            name
+          }
+        }).then(res => {
+          this.date[0].value = res.data.content.register_time;
+          this.date[1].value = res.data.content.pass_time;
+          this.date[2].value = res.data.content.again_time;
+        })
       },
       format(percentage) {
         return percentage;
       }
     },
     watch:{
+      '$store.state.start'(){
+        const parmas = new URLSearchParams();
+        parmas.append('area_type',5);
+        parmas.append('hospital_id',this.$route.query.id);
+        parmas.append('start',this.$store.state.start);
+        parmas.append('end',this.$store.state.end);
+        this.$axios.post(getCoreDetail,parmas).then(res => {
 
+            this.$store.state.subItem = res.data.data;
+          console.log(this.$store.state.subItem)
+        })
+
+        const params2  = new URLSearchParams();
+        params2.append('area_type',5);
+        params2.append('start',this.$store.state.start);
+        params2.append('end',this.$store.state.end);
+        params2.append('hospital_id',this.$route.query.id);
+
+        this.$axios.post(getCoreDetail,params2).then(res => {
+
+          this.$store.state.infoList = res.data.data;
+
+        })
+
+        const params3  = new URLSearchParams();
+        params3.append('area_type',5);
+        params3.append('start',this.$store.state.start);
+        params3.append('end',this.$store.state.end);
+        params3.append('hospital_id',this.$route.query.id);
+
+        this.$axios.post(getCoreDetail,params3).then(res => {
+          this.$store.state.subItem = res.data.data;
+
+        })
+      }
     }
   }
 </script>
@@ -455,6 +532,7 @@
 
     .rank{
         display: flex;
+        justify-content: space-between;
     }
 
     .rank-item{
@@ -673,7 +751,67 @@
 
     }
 
+    .dropdow{
+        color:#008599;
+    }
 
+    .subItem{
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      margin: 0 2.5rem 1.88rem 0;
+      width:100%;
+      height:7.5rem;
+      padding:1rem 1.25rem;
+      background: #FFFFFF;
+      box-shadow: 0.1rem 0.1rem 1rem 0.2rem rgba(111, 111, 111, 0.2);
+      border-radius: 1rem;
+    }
+
+    .subItem .info{
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 70%;
+      height: 100%;
+      margin-right: 1rem;
+    }
+
+    .subItem .icon{
+      width: 4.5rem;
+      height: 4.5rem;
+      background: #D4ECF2;
+      border-radius: 50%;
+    }
+
+    .title{
+      height: 2.75rem;
+      font-size: 0.8rem;
+
+    }
+    .icon{
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon-gengduo{
+      position: absolute;
+      right: 0.2rem;
+      top: 0.25rem;
+      color:#008599;
+      font-size: 1.5rem;
+    }
+
+
+    .title{
+      font-size: 1rem;
+      font-weight: 800;
+    }
 
     .infoList::-webkit-scrollbar { width: 0 !important };
 </style>

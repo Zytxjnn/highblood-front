@@ -89,8 +89,6 @@
         width: 4rem;
         height: 100%;
         box-sizing: border-box;
-        
-        
         opacity: 0.6;
         font-size: .88rem;
         color:#fff;
@@ -106,7 +104,7 @@
       margin-top: 2rem;
       width: 100%;
       height: 58vh;
-      background-image: url('../../../assets/数据概览/左下.png');
+      background-image: url('~@/assets/数据概览/左下.png');
       background-size:100% 100%;
     }
 

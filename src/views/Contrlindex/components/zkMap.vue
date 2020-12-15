@@ -5,7 +5,8 @@
              element-loading-text="拼命加载中"
              element-loading-spinner="el-icon-loading"
              element-loading-background="rgba(0, 0, 0, 0.8)"  ></div>
-        <div class="back" v-show="$store.state.province" @click="mapBack">返回</div>
+        <div class="back" v-show="$store.state.province" @click="mapBack">地图返回</div>
+        <div class="back" v-show="$store.state.isConsortiumList" @click="IndexReturn">指标返回</div>
     </div>
 </template>
 
@@ -95,8 +96,8 @@
         const params = new URLSearchParams();
         params.append('area_type',this.$store.state.area_type);
         params.append('province',provincesText);
-        params.append('start','2020-11');
-        params.append('end','2020-11');
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
         this.$axios.post(getCoreDetail,params).then(res => {
           this.$store.state.subItem = res.data.data;
         });
@@ -123,8 +124,8 @@
             const params = new URLSearchParams();
             params.append('area_type',this.$store.state.area_type);
             params.append('city',param.name);
-            params.append('start','2020-11');
-            params.append('end','2020-11');
+            params.append('start',this.$store.state.start);
+            params.append('end',this.$store.state.end);
             this.$axios.post(getCoreDetail,params).then(res => {
               this.$store.state.subItem = res.data.data;
             });
@@ -218,8 +219,8 @@
 
         params.append('area_type',this.$store.state.area_type);
         params.append('province',this.$store.state.province);
-        params.append('start','2020-11');
-        params.append('end','2020-11');
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
 
         this.$axios.post(getCoreDetail,params).then(res =>{
           this.$store.state.subItem = res.data.data;
@@ -255,7 +256,7 @@
         this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
-      },
+      },    // 获取排名信息
       getInfoList(){
         const params = new URLSearchParams();
 
@@ -263,15 +264,18 @@
         if(this.$store.state.area_type === 2){
           params.append('province',this.$store.state.provicne);
         }
-        params.append('start','2020-11');
-        params.append('end','2020-11');
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
         this.$axios.post(getCoreDetail,params).then(res => {
           this.$store.state.infoList = res.data.data;
           console.log(res.data.data)
         })
 
 
-      }
+      }, // 获取对比区域的信息
+      IndexReturn(){    // 返回到全国信息
+        this.$store.state.isConsortiumList = false;
+      },
     },
     computed: {}
   }

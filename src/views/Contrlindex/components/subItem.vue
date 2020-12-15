@@ -1,35 +1,41 @@
 <template>
     <div class="subItem" @click="switchToConsortiumList">
         <div class="info">
-            <div class="title">{{index}}.{{data.core_name}}</div>
-            <div v-if="data.all_count != 0" class="content">
+            <div class="title">{{index}}.{{data.core_name || data[ikey].core_name }}</div>
+            <div class="content" v-if="data.all_count">
                 <div>
-                    <div style="display:flex;align-items: center">
-                         <span class="highlight">{{$store.state.zkRank[ikey].rank}}</span>
-                         <span>/{{$store.state.zkRank[ikey].count}}</span>
+                    <div style="display:flex;align-items: center" v-if="$store.state.zkRank[ikey]">
+                        <span class="highlight">{{$store.state.zkRank[ikey].rank}}</span>
+                        <span>/{{$store.state.zkRank[ikey].count}}</span>
+                    </div>
+                    <div style="display:flex;align-items: center" v-else>
+                        /
                     </div>
                     <div>
                         排名
                     </div>
                 </div>
                 <div>
-                    <div style="display:flex;align-items:center;" v-if="$store.state.infoList[ikey]">
+
+                    <div style="display:flex;align-items:center;" v-if="$store.state.infoList[ikey].all_count">
                         <span class="highlight">
                             {{$store.state.infoList[ikey].unit === 1 ? $store.state.infoList[ikey].avg_time : $store.state.infoList[ikey].unit===2 ? $store.state.infoList[ikey].pass_percent:$store.state.infoList[ikey].all_count}}
                         </span>
                         <span>{{$store.state.infoList[ikey].unit === 1 ? '分钟' : $store.state.infoList[ikey].unit===2 ? '%' : '例'}}</span>
                     </div>
+                    <div v-else>无数据</div>
                     <div>
-                        {{ this.$store.state.area_type === 1 ? '全国' : this.$store.state.area_type === 2 ? '全省' : '全市'}}
+                        {{this.$store.state.contrast_area}}
                     </div>
                 </div>
                 <div>
-                    <div style="display:flex;align-items:center;">
+                    <div style="display:flex;align-items:center;" v-if="data.all_count">
                         <span class="highlight">
                             {{data.unit === 1 ? data.avg_time : data.unit===2 ? data.pass_percent:data.all_count}}
                         </span>
                         <span>{{data.unit === 1 ? '分钟' : data.unit===2 ? '%' : '例'}}</span>
                     </div>
+                    <div v-else>无数据</div>
                     <div>
                        本地
                     </div>
@@ -37,12 +43,17 @@
             </div>
             <div v-else>无数据</div>
         </div>
-        <div class="icon"></div>
+
+        <div class="icon">
+            <img :src='"~@/assets/质控指标/icons/"+index+".png"' alt="">
+        </div>
         <div class="iconfont icon-gengduo"></div>
     </div>
 </template>
 
 <script>
+import {getCoreDetail} from '@/utils/api'
+
   export default {
     name: "subItem",
     props:{
@@ -66,8 +77,12 @@
     },
     methods:{
       switchToConsortiumList(){ // 显示医联体列表
-        // this.$store.state.isConsortiumList = true;
+        this.$store.state.isConsortiumList = true;
       }
+    },
+    watch:{
+
+
     }
   }
 </script>
@@ -84,7 +99,7 @@
         height:7.5rem;
         padding:1rem 1.25rem;
         background: #FFFFFF;
-        box-shadow: 0.1rem 0.1rem 0.2rem 0.2rem rgba(111, 111, 111, 0.2);
+        box-shadow: 0.1rem 0.1rem 1rem 0.2rem rgba(111, 111, 111, 0.2);
         border-radius: 1rem;
     }
 
@@ -105,8 +120,8 @@
 
     .title{
         height: 2.75rem;
-        font-size: 0.8rem;
-
+        font-size: 1rem;
+      font-weight: 800;
     }
 
     .count{
@@ -163,5 +178,13 @@
         top: 0.25rem;
         color:#008599;
         font-size: 1.5rem;
+    }
+
+    .icon{
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>

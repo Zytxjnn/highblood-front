@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import {getCoreDetail} from '@/utils/api'
+    import {getCoreDetail,getCoreRank} from '@/utils/api'
 
   export default {
     name: "ControlRange2",
@@ -24,17 +24,30 @@
           0:'国内对比',
           1:'省内对比',
           2:'市内对比',
-        }
+        },
+        id:'',
+        name:'',
+        province:'',
+        city:''
       }
     },
     mounted() {
+
+      this.id= this.$route.query.id;
+      this.name= this.$route.query.name;
+      this.province= this.$route.query.province;
+
+      this.city= this.$route.query.city;
+
+
       this.getInfoList(1); // 对比
 
       this.getRank(1);
     },
     methods: {
       sliderChange(e) {
-        this.$store.state.area_type = e + 1;
+
+        this.$store.state.contrast_area = e === 0 ? '全国' : e === 1 ? '全省' : '全市'
 
         this.getRank(e + 1);
 
@@ -44,30 +57,69 @@
       getRank(area_type) {
         const params = new URLSearchParams();
         params.append('area_type', area_type);
-        params.append('data_type', 4);
-        params.append('hospital_id', this.$route.query.id);
+        if (this.$route.path === '/hospital'){
+          params.append('data_type',4)
+          params.append('hospital_id',this.$route.query.id)
+        }else{
+          params.append('data_type',3)
+          params.append('hospital_joined_id',this.$route.query.id)
+        }
+
         params.append('start', this.$store.state.start);
         params.append('end', this.$store.state.end);
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank', params).then(res => {
+        this.$axios.post(getCoreRank, params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
       },
       getInfoList(area_type) {
+        this.$store.state.area_type = area_type;
+
         const params = new URLSearchParams();
         params.append('area_type', area_type);
         switch (area_type) {
+            case 1:
+              console.log('全国');
+              break;
             case 2: // 省内对比
-              params.append('province',this.$route.query.province);
+              console.log('全省');
+              params.append('province',this.province);
             break;
             case 3: // 市内对比
-              params.append('city',this.$store.state.city);
+              console.log('全市');
+              params.append('city',this.city);
             break;
         }
-
-        params.append('start', '2020-11');
-        params.append('end', '2020-11');
+        params.append('start', this.$store.state.start);
+        params.append('end', this.$store.state.end);
         this.$axios.post(getCoreDetail, params).then(res => {
           this.$store.state.infoList = res.data.data;
+          this.$store.dispatch('setInfoList',res.data.data);
+        })
+      }
+    },
+    watch:{
+      '$store.state.start'(){
+        // 更换时间后 刷新排名信息
+        const params = new URLSearchParams();
+        params.append('area_type',this.$store.state.area_type);
+        params.append('data_type',4);
+        params.append('hospital_id',this.$route.query.id);
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+        this.$axios.post(getCoreRank,params).then(res => {
+          this.$store.state.zkRank = res.data.data;
+        })
+
+        const params2  = new URLSearchParams();
+        params2.append('area_type',this.$store.state.area_type);
+        params2.append('start',this.$store.state.start);
+        params2.append('end',this.$store.state.end);
+        params2.append('hospital_id',this.$route.query.id);
+
+        this.$axios.post(getCoreDetail,params2).then(res => {
+
+          this.$store.state.infoList = res.data.data;
+
         })
       }
     }

@@ -198,9 +198,9 @@ import Map from '@/components/Map'
          return i.province;
        });
 
-       this.option.series[0].data = pass_num;
-       this.option.series[1].data = build_num;
-       this.option.series[2].data = num;
+       this.option.series[0].data = num;
+       this.option.series[1].data = pass_num;
+       this.option.series[2].data = build_num;
        this.option.xAxis[0].data = province;
 
        let chart = this.echarts.init(document.getElementById('chart'));

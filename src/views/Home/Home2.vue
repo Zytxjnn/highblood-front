@@ -212,9 +212,10 @@ export default {
   },
   methods:{
     // 初始化 病例填报状态
-    async initBlChart(){
+    async initBlChart(province,city){
         let chart = this.echarts.init(document.getElementById('blChart'));
-        const {data} = await this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count');
+
+        const {data} = await this.$axios.get(`http://newhyper.chinacpc.mobi/api/v1/qc/count`);
 
         this.BlisLoding = false;
 
@@ -222,6 +223,7 @@ export default {
           this.option.series[0].data[i].value =data.data.count[i].count;
           this.option.series[0].data[i].name =data.data.count[i].name;
         }
+
         this.option.graphic.style.text = `填报总数
  ${data.data.all_count}例`;
 
@@ -271,14 +273,15 @@ export default {
         this.data[0].number = res.data.data.all_count;
         this.data[1].number = res.data.data.today_count;
         this.data[2].number = res.data.data.today_org;
-
         this.isCountLoding = false;
       })
+
+
     }
   },
   watch:{
     '$store.state.province'(val){
-
+      this.BlisLoding = true;
       this.isCountLoding = true;
       this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
         params:{
@@ -289,11 +292,27 @@ export default {
         this.data[1].number = res.data.data.today_count;
         this.data[2].number = res.data.data.today_org;
 
+        let chart = this.echarts.init(document.getElementById('blChart'));
+
+        for(let i in res.data.data.count){
+          this.option.series[0].data[i].value =res.data.data.count[i].count;
+          this.option.series[0].data[i].name =res.data.data.count[i].name;
+        }
+
+        this.option.graphic.style.text = `填报总数
+ ${res.data.data.all_count}例`;
+
+        chart.setOption(this.option);
+
+        this.BlisLoding = false;
         this.isCountLoding = false;
       })
+
+
+
     },
     '$store.state.city'(val){
-
+      this.BlisLoding = true;
       if(val === ''){
         this.isCountLoding = true;
         this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
@@ -304,7 +323,19 @@ export default {
           this.data[0].number = res.data.data.all_count;
           this.data[1].number = res.data.data.today_count;
           this.data[2].number = res.data.data.today_org;
+          let chart = this.echarts.init(document.getElementById('blChart'));
 
+          for(let i in res.data.data.count){
+            this.option.series[0].data[i].value =res.data.data.count[i].count;
+            this.option.series[0].data[i].name =res.data.data.count[i].name;
+          }
+
+          this.option.graphic.style.text = `填报总数
+ ${res.data.data.all_count}例`;
+
+          chart.setOption(this.option);
+
+          this.BlisLoding = false;
           this.isCountLoding = false;
         })
       }else{
@@ -316,7 +347,23 @@ export default {
           this.data[0].number = res.data.data.all_count;
           this.data[1].number = res.data.data.today_count;
           this.data[2].number = res.data.data.today_org;
+
+          let chart = this.echarts.init(document.getElementById('blChart'));
+
+          for(let i in res.data.data.count){
+            this.option.series[0].data[i].value =res.data.data.count[i].count;
+            this.option.series[0].data[i].name =res.data.data.count[i].name;
+          }
+
+          this.option.graphic.style.text = `填报总数
+ ${res.data.data.all_count}例`;
+
+          chart.setOption(this.option);
         })
+
+
+
+        this.BlisLoding = false;
         this.isCountLoding = false;
       }
 

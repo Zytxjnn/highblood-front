@@ -2,7 +2,7 @@
     <div id="index">
         <Header :title="$store.state.zkTitle"/>
         <Container/>
-        <Legend/>
+<!--        <Legend/>-->
         <Sidebar/>
         <ControlRange v-show="$store.state.city" :type="1" />
     </div>

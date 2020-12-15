@@ -49,9 +49,7 @@
         width: 100%;
         height: 100%;
         overflow-y: scroll;
-       
         margin-top: 0.875rem;
-       
     }
 
     .rank-list::-webkit-scrollbar { width: 0 !important }

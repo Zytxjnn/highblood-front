@@ -100,6 +100,8 @@
 
           this.$store.state.isLoading1 = false;   // 地图加载完成
 
+
+
           map.off('click');    // 清除重复绑定的click事件
 
           map.on('click',(param) => {
@@ -186,7 +188,7 @@
           if(this.historyPlaceRecord.count === 0){  // 返回到全国地图
             this.$store.state.sjTitle = '全国';   // 改变标题
 
-            const {data} = await this.$axios.get(`https://www.chinahc.org.cn/apidata/getNumInfoByProvince`);
+            const {data} = await this.$axios.get(`http://highblood.chinacpc.mobi/apidata/getNumInfoByProvince`);
             this.$store.state.content = data.content;
 
             this.initMap();

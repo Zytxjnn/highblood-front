@@ -2,11 +2,10 @@
     <div id="sidebar" >
         <div class="views" v-show="this.$store.state.sidebar.left">
             <div class="view" v-for="item in data" @click="go(item.path)">
-               <el-image :src="item.img">
-                   <div slot="error" class="image-slot">
-                        <i class="el-icon-picture-outline"></i>
-                    </div>
-               </el-image>
+              <img src="../assets/SideBar/数据概览.png" v-show="item.title === '数据概览'" />
+              <img src="../assets/SideBar/质控指标.png" v-show="item.title === '质控指标'" />
+              <img src="../assets/SideBar/设置.png" v-show="item.title === '设置'" />
+              <img src="../assets/SideBar/退出.png" v-show="item.title === '退出登录'" />
                 <div>{{item.title}}</div>
             </div>
         </div>
@@ -14,7 +13,6 @@
 
          @click="$store.state.sidebar.left = !$store.state.sidebar.left">
             <span :class="['iconfont',$store.state.sidebar.left ? 'icon-xiangzuo':'icon-gengduo']"></span>
-
         </div>
     </div>
 </template>
@@ -25,41 +23,26 @@ export default {
         return {
             data:[
                 {
-                    img:'',
+                    img:'../assets/SideBar/数据概览.png',
                     title:'数据概览',
                     path:'/'
                 },
                  {
-                    img:'',
+                    img:'../assets/SideBar/质控指标.png',
                     title:'质控指标',
                     path:'/controlindex'
                 },
-                 {
-                    img:'',
-                    title:'认证指标',
-                    path:'/controlindex'
-                },
-                 {
-                    img:'',
-                    title:'质控报告',
-                    path:'/controlindex'
-                },
-                 {
-                    img:'',
-                    title:'留言板',
-                    path:'/controlindex'
-                },
                 {
-                    img:'',
+                    img:'../assets/SideBar/设置.png',
                     title:'设置',
                     path:'/controlindex'
                 },
                 {
-                    img:'退出登录',
+                    img:'../assets/SideBar/退出登录.png',
                     title:'退出登录',
                     path:'/controlindex'
                 }
-                
+
             ]
         }
     },
@@ -75,11 +58,11 @@ export default {
 <style scoped>
     .views{
         width:8rem;
-        height: 80vh;
+
         padding: 10px;
         position: fixed;
         top: 50%;
-        transform: translate(0,-40vh);
+        transform: translate(0,-23vh);
         left: 0;
         box-sizing: border-box;
         background-color: #fff;
@@ -117,10 +100,15 @@ export default {
         box-shadow: 2px 0px 5px #cbd3ff;
         border-radius: 0 5rem 5rem 0;
 
+      background: linear-gradient(0deg, #269DAF 0%, #7FD6F0 100%);
+    }
+
+    .iconfont{
+      color:#fff;
     }
 
     .views{
-        height: 77vh;
+
         overflow-y: scroll;
         
     }

@@ -1,6 +1,7 @@
 <template>
     <div id="Consortium">
-        <el-collapse v-model="activeName">
+        <div v-show="show" class="nodata">暂无数据</div>
+        <el-collapse v-show="!show" v-model="activeName">
             <el-collapse-item v-for="(province,proName,k) in data">
                 <template slot="title">
                     <div class="province-title">
@@ -8,7 +9,7 @@
                     </div>
                 </template>
                 <div class="consortium-list">
-                    <div class="consortium-item" @click="goto(item.hospital,proName)" v-for="(item,i) in province">
+                    <div class="consortium-item" @click="goto(item.hospital,proName,item.city,item.hospital_id)" v-for="(item,i) in province">
                         <div class="item-title">{{item.hospital}}</div>
 
                         <div class="item info">
@@ -53,69 +54,23 @@
     name: "ConsortiumList",
     data(){
       return {
+        show:false,
         activeName:'1',
         provincesText:['上海', '河北', '山西', '内蒙古', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西', '海南', '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆', '北京', '天津', '重庆', '香港', '澳门', '台湾'],
-        data: [
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          },
-          {
-            "title": "南京市医院",
-            "count1": 2151,
-            "rank1":16,
-            "rank2":51,
-            "count2":200
-          } 
-        ]
+        data: {}
       }
     },
     mounted() {
+
+
+      if (this.$store.state.province){
+        this.getDataByProvince();
+      }
+
+      if (this.$store.state.city){
+        this.getDataByCity();
+      }
+
       this.getData();
     },
     methods:{
@@ -127,12 +82,47 @@
         params.append('end',this.$store.state.end);
         this.$axios.post(getHospitalJoinedListByCore,params).then(res => {
           this.data = res.data.data;
+          console.log(JSON.stringify(this.data) === '[]')
+          if (JSON.stringify(this.data) === '[]') { // 如果不为空，则会执行到这一步，返回true
+
+            this.show = true
+          }else{
+            this.show = false
+          }
+
         })
       },
-      goto(name,province){
+      getDataByProvince(){
+        const params =  new URLSearchParams();
+        params.append('area_type',this.$store.state.area_type);
+        params.append('core_name',this.$store.state.core_name);
+        params.append('province',this.$store.state.province);
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+        this.$axios.post(getHospitalJoinedListByCore,params).then(res => {
+          this.data = res.data.data;
+        })
+      },
+      getDataByCity(){
+        const params =  new URLSearchParams();
+        params.append('area_type',this.$store.state.area_type);
+        params.append('core_name',this.$store.state.core_name);
+
+        if(this.$store.state.city === ''){
+          params.append('province',this.$store.state.province);
+        }else{
+          params.append('city',this.$store.state.city);
+        }
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+        this.$axios.post(getHospitalJoinedListByCore,params).then(res => {
+          this.data = res.data.data;
+        })
+      },
+      goto(name,province,city,id){
         // this.$store.state.province = province;
         // this.$router.push(`/medicalconsortium?name=${name}`);
-        this.$router.push(`/medicalconsortium?name=${name}&province=${province}`);
+        this.$router.push(`/medicalconsortium?name=${name}&province=${province}&city=${city}&id=${id}`);
       }
     },
     watch:{
@@ -167,6 +157,9 @@
         this.$axios.post(getHospitalJoinedListByCore,params).then(res => {
           this.data = res.data.data;
         })
+      },
+      '$store.state.start'(val){
+        this.getData();
       }
     }
   }
@@ -174,6 +167,7 @@
 
 <style scoped>
     #Consortium{
+
         height: 80vh;
         overflow-y: scroll;
     }
@@ -226,6 +220,13 @@
         content: "";
     }
 
-
+    .nodata{
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        color: #008599;
+        font-size: 2rem;
+    }
 
 </style>

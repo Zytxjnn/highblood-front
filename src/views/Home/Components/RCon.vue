@@ -82,6 +82,7 @@
         this.normalData[3].count = this.$store.state.content.sum_build_hospital_2;
       },
       updataBing_content(){
+
         var myChart = this.echarts.init(document.getElementById('main'));
 
         const {bing_content} = this.$store.state.content;
@@ -101,9 +102,11 @@
     },
     watch:{
       "$store.state.content": function() {
-        this.updataNormalInfoData();
+        console.log('content update')
 
         this.updataBing_content();
+
+        this.updataNormalInfoData();
       }
     }
   }

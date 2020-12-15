@@ -47,8 +47,12 @@
                         </div>
                     </div>
                     <div class="charts">
-                        <div class="score-comp">
-                            <div id="score-comp-chart" style="height:100%;width:100%"></div>
+                        <div class="score-comp"  v-loading='isCompChartLoading'
+                             element-loading-text="拼命加载中"
+                             element-loading-spinner="el-icon-loading"
+                             element-loading-background="rgba(0, 0, 0, 0.2)" >
+                            <div id="score-comp-chart" style="height:100%;width:100%"
+                                ></div>
                         </div>
                         <div class="score-trend">
                             <div class="trend-title">
@@ -58,11 +62,11 @@
                                 <div class="progress-month">
                                     {{item.month}}月
                                 </div>
-                                <el-progress :class="'progress'+i"
-                                                :stroke-width="20"
-                                                :percentage="item.value"
-                                                :format="format"
-                            />
+<!--                                <el-progress :class="'progress'+i"-->
+<!--                                                :stroke-width="20"-->
+<!--                                                :percentage="item.value"-->
+<!--                                                :format="format"-->
+<!--                            />-->
                             </div>
                             <div class="filled-amount">
                                 <div class="filled-amount-icon">
@@ -99,12 +103,26 @@
 <!--                        <div v-for="(item,i) in data">-->
 <!--                           -->
 <!--                        </div>-->
-                        <sub-item v-for="(item,key,i) in $store.state.subItem"  :ikey="key" :data="item" :index="i+1" v-loading='isLoading'
+                        <sub-item v-for="(item,key,i) in $store.state.subItem"  :ikey="key" :data="item" :index="i+1"
+                                  v-loading='isLoading'
                                   element-loading-text="拼命加载中"
                                   element-loading-spinner="el-icon-loading"
                                   element-loading-background="rgba(0, 0, 0, 0.2)"  />
-<!--                        <div  v-for="(item,key,i) in $store.state.subItem" >-->
-<!--                            {{item.all_count}}-->
+<!--                        <div v-if="JSON.stringify($store.state.subItem) === '[]'">-->
+                          <div v-for="i in 9" v-if="JSON.stringify($store.state.subItem) === '[]'">
+                            <div class="subItem">
+                              <div class="info">
+                                <div class="title">{{i}}. {{subItems[i-1]}}</div>
+                                <div class="content">
+                                  无数据
+                                </div>
+                              </div>
+                              <div class="icon">
+                                <img :src='"~@/assets/质控指标/icons/"+i+".png"' alt="">
+                              </div>
+                              <div class="iconfont icon-gengduo"></div>
+                            </div>
+                          </div>
 <!--                        </div>-->
                         <div class="none"></div>
                         <div class="none"></div>
@@ -113,6 +131,7 @@
             </el-row>
         </div>
         <ControlRange2 :type="2"/>
+        <Sidebar/>
     </div>
 </template>
 
@@ -120,16 +139,24 @@
   import Header from "./components/Header";
   import subItem from "./components/subItem";
   import ControlRange2 from "./components/ControlRange2";
+  import Sidebar from "@/components/Sidebar";
   import echarts from 'echarts'
 
-import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
+import { getHospitalJoinedList,
+  getCoreDetail,
+  getHospitalList,
+  getCoreRank,
+  getTimeInfoByHospital,
+  getScoreInfo,
+  getScoreListForHospital} from '@/utils/api'
 
   export default {
     name: "MedicalConsortium",
     components:{
       Header,
       subItem,
-      ControlRange2
+      ControlRange2,
+      Sidebar
     },
     data(){
       return {
@@ -305,22 +332,30 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
             "count2":200
           }
         ],
-        hospital_joined_info:[]
+        hospital_joined_info:[],
+        isCompChartLoading:true,
+        subItems:['高血压诊治例数','继发性高血压（或）难治性高血压例数占比','诊断使用心电图','诊断使用动态血压监测',
+          '诊断尿白蛋白/肌酐比检测率','高血压达标率','高血压随访率','单片复方制剂使用率','高血压转诊率']
       }
     },
     mounted() {
 
       this.name = this.$route.query.name;
+      this.id = this.$route.query.id;
+      this.$store.state.hospital_joined_path = this.$route.fullPath;
+      // console.log(this.$route.fullPath)
+      // this.id = this.$route.query.id;
 
-      // 初始化图表
-      const compChart = this.echarts.init(document.getElementById('score-comp-chart'));
-      compChart.setOption(this.getCompOption());
+      // // 初始化图表
+      // const compChart = this.echarts.init(document.getElementById('score-comp-chart'));
+      // compChart.setOption(this.getCompOption());
 
+      this.getInfoList();
+      this.getData();
+      this.getCompOption();
+      this.getTimeInfoByHospital();  // 获取注册时间，认证时间
 
-        this.getInfoList();
-        this.getData();
-
-
+      this.getScoreInfo();// 获取医联体质控评分
     },
     methods:{
        getData(){    // 请求医联体信息
@@ -331,16 +366,18 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
         params1.append('hospital_joined_name',this.name);
         this.$axios.post(getHospitalJoinedList,params1).then(res => {
           this.hospital_joined_info =  res.data.data;   // 保存医联体信息;
-          this.$store.state.hospital_joined_id = this.hospital_joined_info[0].hospital_id;
 
-          // const params = new URLSearchParams();
+          this.$store.state.hospital_joined_id = this.hospital_joined_info[0].hospital_id;
+          console.log(this.$store.state.hospital_joined_id)
+
+          // const params = new URLSearchParams();$store.state.subItem
           // params.append('area_type',1);
           // params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
           // this.$axios.post(getHospitalList,params).then(res => {
           //   this.hospitalList = res.data.data;
           // })
 
-          this.getRank(3);
+          this.getRank();
 
           // this.getRank(4);
           // 请求质控指标信息
@@ -364,29 +401,22 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
           this.$store.state.infoList = res.data.data;
         })
       },
-      getRank(data_type){
+      getRank(){
         const params = new URLSearchParams();
         params.append('area_type',1);
-        params.append('data_type',data_type);
-        switch (data_type) {
-          case 1:
-            params.append('province',this.$store.state.province);
-            break;
-          case 3:
-            params.append('hospital_joined_id',this.hospital_joined_info[0].hospital_id);
-            break;
-        }
+        params.append('data_type',3);
+        params.append('hospital_joined_id',this.$route.query.id);
         params.append('start',this.$store.state.start);
         params.append('end',this.$store.state.end);
-
-
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
+        this.$axios.post(getCoreRank,params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
 
+
+
       },
       getCompOption(){  // 返回环比图options
-        return {
+        const option =  {
           backgroundColor:'',
           tooltip:{
             show:true,
@@ -436,14 +466,76 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
             }
           }]
         };
+        const params = new URLSearchParams();
+        params.append('data_type',2);
+        params.append('hospital_id',this.id);
+        this.$axios.post(getScoreListForHospital,params).then( res => {
+          option.xAxis.data = res.data.data.x_list;
+          option.series[0].data = res.data.data.y_list;
+
+          const compChart = this.echarts.init(document.getElementById('score-comp-chart'));
+          compChart.setOption(option);
+
+          this.isCompChartLoading = false;  // 图表加载完成
+        });
       },
       format(percentage) {
         return percentage;
-      }
+      },
+      getTimeInfoByHospital(){ // 获取注册时间，通过认证时间，
+        this.$axios.get(`${getTimeInfoByHospital}?name=${this.name}`).then(res => {
+          this.date[0].value = res.data.content.register_time;
+          this.date[1].value = res.data.content.pass_time;
+          this.date[2].value = res.data.content.again_time;
+        })
+      },
+      getScoreInfo(){
+        const params = new URLSearchParams();
+        params.append('data_type',1);
+        params.append('hospital_joined_id',this.id);
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+        this.$axios.post(getScoreInfo,params).then(res => {
+          this.rank[0].value = res.data.data[0].score+'分';
+          this.rank[1].value = res.data.data[0].country_rank;
+          this.rank[2].value = res.data.data[0].province_rank;
+          this.rank[3].value = res.data.data[0].city_rank;
+        })
+      },
+
     },
     watch:{
-      '$store.state.subItem'(){
-        this.getInfoList();
+      '$store.state.start'(){
+        // 更换时间后 刷新排名信息
+        const params = new URLSearchParams();
+        params.append('area_type',1);
+        params.append('data_type',3);
+        params.append('hospital_joined_id',this.$route.query.id);
+        params.append('start',this.$store.state.start);
+        params.append('end',this.$store.state.end);
+        this.$axios.post(getCoreRank,params).then(res => {
+          this.$store.state.zkRank = res.data.data;
+        })
+
+        // 刷新对比的区域的信息
+        const params2  = new URLSearchParams();
+        params2.append('area_type',this.$store.state.area_type);
+        params2.append('start',this.$store.state.start);
+        params2.append('end',this.$store.state.end);
+        this.$axios.post(getCoreDetail,params2).then(res => {
+          this.$store.state.infoList = res.data.data;
+        })
+
+        const params3  = new URLSearchParams();
+        params3.append('area_type',4);
+        params3.append('start',this.$store.state.start);
+        params3.append('end',this.$store.state.end);
+        params3.append('hospital_joined_id',this.$route.query.id);
+
+        this.$axios.post(getCoreDetail,params3).then(res => {
+          this.$store.state.subItem = res.data.data;
+
+        })
       }
     }
   }
@@ -457,6 +549,7 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
 
     .rank{
         display: flex;
+        justify-content: space-between;
     }
 
     .rank-item{
@@ -476,13 +569,13 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
     }
 
     .controlScore{
-        background-image: url("../../assets/MedicalConsortium/controlScore.png");
+        background-image: url("~@/assets/MedicalConsortium/controlScore.png");
     }
     .rank1{
-        background-image: url("../../assets/MedicalConsortium/rank1.png");
+        background-image: url("~@/assets/MedicalConsortium/rank1.png");
     }
     .rank2{
-        background-image: url("../../assets/MedicalConsortium/rank2.png");
+        background-image: url("~@/assets/MedicalConsortium/rank2.png");
     }
 
     .date{
@@ -675,7 +768,63 @@ import { getHospitalJoinedList,getCoreDetail,getHospitalList} from '@/utils/api'
 
     }
 
+    .subItem{
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      margin: 0 2.5rem 1.88rem 0;
+      width:100%;
+      height:7.5rem;
+      padding:1rem 1.25rem;
+      background: #FFFFFF;
+      box-shadow: 0.1rem 0.1rem 1rem 0.2rem rgba(111, 111, 111, 0.2);
+      border-radius: 1rem;
+    }
 
+    .subItem .info{
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 70%;
+      height: 100%;
+      margin-right: 1rem;
+    }
+
+    .subItem .icon{
+      width: 4.5rem;
+      height: 4.5rem;
+      background: #D4ECF2;
+      border-radius: 50%;
+    }
+
+    .title{
+      height: 2.75rem;
+      font-size: 0.8rem;
+
+    }
+    .icon{
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon-gengduo{
+      position: absolute;
+      right: 0.2rem;
+      top: 0.25rem;
+      color:#008599;
+      font-size: 1.5rem;
+    }
+
+
+    .title{
+      font-size: 1rem;
+      font-weight: 800;
+    }
 
     .infoList::-webkit-scrollbar { width: 0 !important };
 </style>

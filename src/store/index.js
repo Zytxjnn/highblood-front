@@ -16,8 +16,10 @@ export default new Vuex.Store({
     currentDataIndex1:0,
     isLoading1:true,
     isLoading2:true,
+    infoList:[],
     core_name:'', // 根据这个指标获取医联体
     subItem:{},
+    contrast_area:'全国',
     sidebar:{
       left:false,
       right:false
@@ -33,6 +35,7 @@ export default new Vuex.Store({
     isConsortiumList:false, // 质控指标显示数据是否是医联体列表
     hospital_joined_id:null, // 质控指标 医联体id,
     hospitalList:[],
+    hospital_joined_path:'',
   },
   mutations: {
     setlRank(state,lRank){
@@ -46,11 +49,18 @@ export default new Vuex.Store({
     isChina(state,bool){
       state.isChina = bool;
       return state;
+    },
+    setInfoList(state,data){
+      state.infoList = data;
+      return false;
     }
   },
   actions: {
     setlRank(context,payload){
       context.commit('setlRank',payload)
+    },
+    setInfoList(context,payload) {
+      context.commit('setInfoList', payload)
     }
   },
   modules: {

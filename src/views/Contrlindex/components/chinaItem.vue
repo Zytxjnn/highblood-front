@@ -1,7 +1,7 @@
 <template>
     <div class="chinaItem" @click="switchToConsortiumList">
         <div class="info">
-            <div class="title">{{index}}.{{data.core_name}}</div>
+            <div class="title">{{index}}.&nbsp;{{data.core_name}}</div>
             <div class="count" v-if="data.all_count">
                 全国
                 <span v-if="data.unit === 3"> <span class="highlight">{{data.all_count}}</span> 例</span>
@@ -10,7 +10,9 @@
             </div>
             <div v-else>无数据</div>
         </div>
-        <div class="icon"></div>
+        <div class="icon">
+            <img :src='"~@/assets/质控指标/icons/"+index+".png"' alt="">
+        </div>
         <div class="iconfont icon-gengduo"></div>
     </div>
 </template>
@@ -45,18 +47,18 @@
 
 <style scoped>
     .chinaItem{
-        position: relative;
-        display: flex;
-        justify-content: space-between;
-
-        box-sizing: border-box;
-        margin: 0 2.5rem 1.88rem 0;
-        width:100%;
-        height:7.5rem;
-        padding: 1.25rem;
-        background: #FFFFFF;
-        box-shadow: 0.1rem 0.1rem 0.2rem 0.2rem rgba(111, 111, 111, 0.2);
-        border-radius: 1rem;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items:space-between;
+      box-sizing: border-box;
+      margin: 0 2.5rem 1.88rem 0;
+      width:100%;
+      height:7.5rem;
+      padding:1rem 1.25rem;
+      background: #FFFFFF;
+      box-shadow: 0.1rem 0.1rem 1rem 0.2rem rgba(111, 111, 111, 0.2);
+      border-radius: 1rem;
     }
 
     .chinaItem .info{
@@ -89,5 +91,18 @@
         top: 0.25rem;
         color:#008599;
         font-size: 1.5rem;
+    }
+
+    .icon{
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .info .title{
+        font-size: 1rem;
+        font-weight:bold;
     }
 </style>
