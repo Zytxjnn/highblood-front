@@ -329,14 +329,12 @@
       }
     },
     mounted() {
-
       this.name = this.$route.query.name;
       this.id = this.$route.query.id;
 
       // 初始化图表
       this.getCompOption();
 
-      // 请求质控评分、市排名。。。
       this.getData();
 
       // 对比信息
@@ -349,17 +347,20 @@
       this.get6Month();
 
       // 医联体列表 下拉框
-      const params = new URLSearchParams();
-      params.append('area_type',1);
-      params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
-      this.$axios.post(getHospitalList,params).then(res => {
-        this.$store.state.hospitalList = res.data.data;
-      })
+      // const params = new URLSearchParams();
+      // params.append('area_type',1);
+      // params.append('hospital_joined_id',localStorage.getItem('hospital_joined_id'));
+      // // console.log(localStorage.getItem('hospital_joined_id'))
+      // this.$axios.post(getHospitalList,params).then(res => {
+      //   this.$store.state.hospitalList = res.data.data;
+      //   console.log(res.data.data);
+      // })
 
 
     },
     methods:{
       getData(){    // 请求医院体信息
+
           const params2 = new URLSearchParams();
           params2.append('area_type',5);
           params2.append('hospital_id',this.id);
@@ -534,6 +535,25 @@
           this.$store.state.subItem = res.data.data;
 
         })
+      },
+      '$route.query.id'(val){
+
+        this.name = this.$route.query.name;
+        this.id = this.$route.query.id;
+
+        // 初始化图表
+        this.getCompOption();
+
+        this.getData();
+
+        // 对比信息
+        this.getScoreInfo();
+
+        // 请求注册时间 通过认证时间
+        this.getTimeInfoByHospital();
+
+        // 近六月填报趋势
+        this.get6Month();
       }
     }
   }
@@ -543,6 +563,7 @@
     .container{
         background-color: #fafafa;
         padding: 2.5rem 3.1rem;
+        height: 90vh;
     }
 
     .rank{
@@ -643,9 +664,12 @@
     }
 
     .score-comp,.score-trend{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         box-sizing: border-box;
-        padding: 1.5rem 0 0 1rem;
-        height: 25rem;
+        padding: 1.5rem 0 1.5rem 1rem;
+        height: 54vh;
         width: 48%;
         background: #FFFFFF;
         box-shadow: 0rem 0rem 1rem 0rem rgba(74, 182, 214, 0.23);
@@ -709,14 +733,14 @@
     }
 
     .filled-amount-icon img{
-        width: 2rem;
-        height: 2rem;
+        width: 2.5rem;
+        height: 2.5rem;
         margin-right: 0.5rem;
     }
 
     .filled-amount-count{
         color:#F39317;
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         margin-right: 0.5rem;
     }
 
@@ -726,6 +750,11 @@
         align-items: center;
     }
 
+    .filled-amount-upIcon{
+      width: 2rem;
+      height: 1rem;
+    }
+
     .today-icon img{
         height: 2rem;
         width: 2rem;
@@ -733,7 +762,8 @@
 
     .filled-amount-cate{
         display: flex;
-        margin-top: 1.5rem;
+        margin-top: 2vh;
+
     }
 
     .filled-amount-today{
@@ -757,7 +787,7 @@
     .infoList{
         padding-left: 2rem;
         box-sizing: border-box;
-        height: 43rem;
+        height: 90vh;
         overflow-y: scroll;
         display: grid;
         grid-template-columns:45% 45%;
@@ -827,6 +857,10 @@
     .title{
       font-size: 1rem;
       font-weight: 800;
+    }
+
+    .filled-amount-text{
+      font-size: 1.5rem;
     }
 
     .infoList::-webkit-scrollbar { width: 0 !important };

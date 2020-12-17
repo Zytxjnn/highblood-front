@@ -1,6 +1,9 @@
 <template>
-    <div id="header">
+    <div id="header" :key="$route.query.name">
+
         <div :class="['title',title.length >= 15 ? 'mini' : '']">
+          <img class="logo" src="~@/assets/logos/联盟.png" alt="联盟">
+          <img class="logo" src="~@/assets/logos/高血压.png" alt="高血压">
           {{title}}
 <!--          {{ title.length >= 15  ?  '' : '高血压达标中心'}}-->
           <span v-show="$route.path === '/medicalconsortium'">[医联体]</span>
@@ -51,7 +54,7 @@
                 <img @click.stop="dropdow" src="~@/assets/MedicalConsortium/箭头.png" alt="">
                     <div id="dropdow" v-show="isHospitalJoinedListShow2">
                         <div class="dropdow-main" @click="backToConsort">医联体</div>
-                        <div class="dropdow-item" @click="test({name:item.hospital_name,id:item.hospital_id,index:1})" v-for="(item,i) in hospitalList">{{item.hospital_name}}<div/>
+                                                <div class="dropdow-item" @click="test({name:item.hospital_name,id:item.hospital_id,index:1})" v-for="(item,i) in hospitalList">{{item.hospital_name}}<div/>
                     </div>
                 </div>
             </div>
@@ -101,7 +104,7 @@
       }
     },
       mounted() {
-        console.log(this.$route.path === '/medicalconsortium' || '/hospital');
+
 
         // const date = new Date().toLocaleDateString().substr(0,7).replace('/','-')
         this.nowMonth = '2020-11';
@@ -110,7 +113,7 @@
 
         const params = new URLSearchParams();
         params.append('area_type',1);
-        params.append('hospital_joined_id',this.$store.state.hospital_joined_id);
+        params.append('hospital_joined_id',localStorage.getItem('hospital_joined_id'));
         this.$axios.post(getHospitalList,params).then(res => {
           this.hospitalList = res.data.data;
         })
@@ -127,23 +130,15 @@
           this.$store.state.zkTitle = e;
           this.$store.state.area_type = 5;
 
-          if(e.index === 0){
             this.$router.push({
-              path:'medicalconsortium',
-              query:{
-                name:e.name,
-              }
-            })
-          }else{
-            this.$router.push({
-              path:'hospital',
+              path:'/hospital',
               query:{
                 name:e.name,
                 id:e.id,
                 province:this.$route.query.province
               }
-            })
-          }
+            }).catch(err => {})
+
         },
         showMedicalconsortium(){    // 显示该层级下的医联体
           this.isHospitalJoinedListShow = true;   // 显示列表
@@ -227,17 +222,16 @@
 
         }
       },
-      watch:{
-      '$store.state.hospital_joined_id'(val){
+      watch: {
+        '$store.state.hospital_joined_id'(val) {
           const params = new URLSearchParams();
-          params.append('area_type',1);
-          params.append('hospital_joined_id',val);
-          this.$axios.post(getHospitalList,params).then(res => {
+          params.append('area_type', 1);
+          params.append('hospital_joined_id', val);
+          this.$axios.post(getHospitalList, params).then(res => {
             this.hospitalList = res.data.data;
           })
-      },
-
-    }
+        },
+      }
   }
 </script>
 
@@ -251,9 +245,15 @@
     }
 
     #header>.title{
+        display: flex;
+        align-items: center;
         font-size: 2rem;
         color:#333333;
         font-weight: 800;
+    }
+
+    #header>.title>.logo{
+      margin-right:0.5rem;
     }
 
     .mini{

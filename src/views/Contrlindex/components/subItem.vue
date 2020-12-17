@@ -149,13 +149,13 @@ import {getCoreDetail} from '@/utils/api'
         align-items: center;
         justify-content: space-between;
         flex-direction: column;
-
+        width: 30%;
     }
 
     .content>div:not(:last-child):after{
         content: '';
-        right: -1.5rem;
-        transform: translateY(50%);
+        right: -.5rem;
+        transform: translateY(30%);
 
         position: absolute;
 

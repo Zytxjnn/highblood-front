@@ -437,14 +437,13 @@ ${data.data.all_count}例`;
     }
 
     .item .number{
-        
         color:#fff;
         margin-top: .31rem;
         font-size: 0.88rem;
     }
 
     .item .number span{
-        font-size: 1.5rem;
+        font-size: 3rem;
     }
 
     .blChart{

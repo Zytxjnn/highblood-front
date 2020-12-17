@@ -7,6 +7,11 @@ import ControlIndex from "@/views/Contrlindex/ControlIndex";
 import MedicalConsortium from "@/views/Contrlindex/MedicalConsortium";
 import Hospital from "@/views/Contrlindex/Hospital";
 
+// VueRouter.prototype.push = function push(location){
+//   return this.original
+//   // return original.call(this,location).catch(err => err)
+// }
+
 Vue.use(VueRouter);
 
 const routes = [

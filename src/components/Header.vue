@@ -1,5 +1,8 @@
 <template>
     <div id="header">
+
+        <img src="~@/assets/logos/联盟.png" alt="">
+        <img src="~@/assets/logos/高血压.png" alt="">
         <span>{{title}}</span>
         <Date/>
     </div>
@@ -27,10 +30,11 @@
 <style scoped>
     #header{
         position: relative;
-        justify-content: space-between;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background-image: url('../assets/数据概览/top.png');
         background-size:100vw 4.5rem;
-        text-align: center;
         font-size: 2.5rem;
         height: 4.5rem;
         line-height:4.5rem;
@@ -42,5 +46,9 @@
         
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+
+    #header img{
+      margin-right:0.5rem;
     }
 </style>

@@ -374,8 +374,8 @@
         this.$axios.post(getHospitalJoinedList,params1).then(res => {
           this.hospital_joined_info =  res.data.data;   // 保存医联体信息;
 
-          this.$store.state.hospital_joined_id = this.hospital_joined_info[0].hospital_id;
-          console.log(this.$store.state.hospital_joined_id)
+          // this.$store.state.hospital_joined_id = this.hospital_joined_info[0].hospital_id;
+          localStorage.setItem('hospital_joined_id',this.hospital_joined_info[0].hospital_id);  // 本地存储医联体id，防止用户在医院界面刷新后获取不到医联体id
 
           // const params = new URLSearchParams();$store.state.subItem
           // params.append('area_type',1);
@@ -660,9 +660,12 @@
     }
 
     .score-comp,.score-trend{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         box-sizing: border-box;
-        padding: 1.5rem 0 0 1rem;
-        height: 25rem;
+        padding: 1.5rem 0 1.5rem 1rem;
+        height: 53vh;
         width: 48%;
         background: #FFFFFF;
         box-shadow: 0rem 0rem 1rem 0rem rgba(74, 182, 214, 0.23);
@@ -726,14 +729,14 @@
     }
 
     .filled-amount-icon img{
-        width: 2rem;
-        height: 2rem;
+      width: 2.5rem;
+      height: 2.5rem;
         margin-right: 0.5rem;
     }
 
     .filled-amount-count{
         color:#F39317;
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         margin-right: 0.5rem;
     }
 
@@ -774,14 +777,13 @@
     .infoList{
         padding-left: 2rem;
         box-sizing: border-box;
-        height: 43rem;
+        height: 90vh;
         overflow-y: scroll;
         display: grid;
         grid-template-columns:45% 45%;
         grid-template-rows: repeat(7.5rem);
         grid-row-gap: 0.44rem;
         grid-column-gap: 1.88rem;
-
     }
 
     .subItem{
