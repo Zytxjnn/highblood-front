@@ -46,8 +46,7 @@
     },
     methods: {
       sliderChange(e) {
-
-        this.$store.state.contrast_area = e === 0 ? '全国' : e === 1 ? '全省' : '全市'
+        this.$store.state.contrast_area = e === 0 ? '全国' : e === 1 ? '本省' : '本市'
 
         this.getRank(e + 1);
 
@@ -78,14 +77,14 @@
         params.append('area_type', area_type);
         switch (area_type) {
             case 1:
-              console.log('全国');
+
               break;
             case 2: // 省内对比
-              console.log('全省');
+
               params.append('province',this.province);
             break;
             case 3: // 市内对比
-              console.log('全市');
+
               params.append('city',this.city);
             break;
         }
@@ -128,10 +127,10 @@
 
 <style scoped>
     #range{
-        width: 10rem;
+        width: 12rem;
         position: fixed;
-        top: 0;
-        left: 50%;
+        top: 1.5rem;
+        right: 37rem;
     }
 
     .range-tip{
@@ -139,10 +138,14 @@
         color:#008599;
     }
 
+    /deep/.el-slider__marks-text{
+      transform: translate(-30px,10px);
+    }
+
     /deep/.el-slider__marks-text:nth-child(2){
         position: relative !important;
         right:100% !important;
-        left: 5rem !important;
+        left: 6.5rem !important;
         width: 5rem;
         top: 1rem;
     }
@@ -150,8 +153,26 @@
     /deep/.el-slider__marks-text:nth-child(3){
         position: relative !important;
         right:10% !important;
-        left: 10rem !important;
+        left: 12rem !important;
         width: 5rem;
         top: -1rem;
+    }
+
+    /deep/ .el-slider__runway{
+      height: 10px;
+      background-color: #409EFF;
+    }
+
+    /deep/ .el-slider__button{
+      width: 20px;
+      height: 20px;
+
+    }
+
+    /deep/ .el-slider__stop{
+      width: 12px;
+      height: 12px;
+      border:1px solid #409eff;
+      transform: translate(-5px,-2px);
     }
 </style>

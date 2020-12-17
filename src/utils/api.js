@@ -8,7 +8,11 @@ const getScoreInfo = baseUrl + 'QualityControlScore/getScoreInfo';   // 质控�
 const getScoreListForHospital = baseUrl + 'QualityControlScore/getScoreListForHospital'; // 质控指标 某区域的质控分数
 const getCoreRank = baseUrl + '/QualityControlIndex/getCoreRank'; // 获取对比排名信息
 
-const getTimeInfoByHospital = 'http://highblood.chinacpc.mobi/apidata/getTimeInfoByHospital'; // 质控指标 获取医院，医联体注册时间
+const getTimeInfoByHospital = 'https://www.chinahc.org.cn/apidata/getTimeInfoByHospital'; // 质控指标 获取医院，医联体注册时间
+// const getTimeInfoByHospital = 'http://highblood.chinacpc.mobi/apidata/getTimeInfoByHospital'; // 质控指标 获取医院，医联体注册时间
+const get6Month = 'http://newhyper.chinahc.org.cn/api/v1/qc/month'; // 质控指标 近六月填报趋势
+// const get6Month = 'http://newhyper.chinacpc.mobi/api/v1/qc/month'; // 质控指标 近六月填报趋势
+
 
 export {
   getCoreDetail,
@@ -18,5 +22,6 @@ export {
   getScoreInfo,
   getScoreListForHospital,
   getCoreRank,
-  getTimeInfoByHospital
+  getTimeInfoByHospital,
+  get6Month
 }

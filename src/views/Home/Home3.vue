@@ -39,7 +39,6 @@ export default {
       }
     },
    async mounted() {
-     console.log(this.$store.state.province)
      await this.getChartsData();
    },
     methods:{
@@ -74,17 +73,19 @@ export default {
             height:'65%',
               bottom:'10%',
               left:'15%',
+
           },
           title:{
             show:true,
               text:'1.高血压整治例数',
               textStyle:{
               color:'#FFF',
-                fontWeight:'200',
-                fontSize:14
+                fontWeight:'400',
+                fontSize:18,
+
             },
             padding:[
-              5,1000,5,20
+              15,1000,15,20
             ],
               backgroundColor:'#3A3D75'
           },
@@ -140,8 +141,26 @@ export default {
               },
             },
             {
-              show:false,
-            }
+              type: 'value',
+              name: '例',
+              axisLabel:{
+                color:'#D6D7ED'
+              },
+              axisLine:{
+                lineStyle:{
+                  color:'#9A9CB8'
+                }
+              },
+              axisTick:{
+                show:false
+              },
+              splitLine:{
+                show:false
+              },
+              nameTextStyle:{
+                color:'#D6D7ED'
+              },
+            },
           ],
             legend: {
           data: ['蒸发量', '平均温度']
@@ -153,6 +172,10 @@ export default {
               barWidth:10,
               itemStyle:{
                 normal:{
+                  label:{
+                    show:true,
+                    position:'top'
+                  },
                   color:() => {
                     const colorList = ['rgba(178, 242, 181, 1)','rgba(53, 186, 255, 1)','rgba(73, 126, 234, 1)'];
                     let colorIndex = Math.round(Math.random()*2);
@@ -169,18 +192,24 @@ export default {
               }
             },
             {
+              // show:false,
               type: 'line',
-              yAxisIndex: 1,
-              symbolSize:6,
+              symbolSize: 0, // symbol的大小设置为0
+              showSymbol: false, // 不显示symbol
+              lineStyle: {
+                width: 0, // 线宽是0
+                color: 'rgba(0, 0, 0, 0)' // 线的颜色是透明的
+              },
               data: [1000,1200,1400,1600,1000,2000,1200,3600,1000,2000,1000,2000],
-              itemStyle : {
-                normal : {
-                  color:'#fff',
-                  lineStyle:{
-                    color:'#fff'
-                  }
-                }
-              }
+              // itemStyle : {
+              //   normal : {
+              //     color:'#fff',
+              //     lineStyle:{
+              //       color:'#fff'
+              //     }
+              //   }
+              // },
+              // clip:true
             }
           ],
             backgroundColor:'#22254C',
@@ -195,18 +224,23 @@ export default {
         option.series[1].data = this.options[i].y_right_list;
         option.yAxis[0].name = this.options[i].core_unit.left;
 
-        var Min = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list]),
-          Max = this.calMax([this.options[i].y_left_list, this.options[i].y_right_list])
+        // var Min = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list])
+          var Max = this.calMax([this.options[i].y_left_list])
+        // var Max = Math.max.apply(null,this.options[i].y_left_list)
+        console.log(Max)
+        option.yAxis[0].max = Max + Max * 0.1;
+        option.yAxis[0].min = 0;
+        option.yAxis[0].interval = (Max + Max * 0.1) / 5;
 
-        option.yAxis[0].max = Max;
-        option.yAxis[0].min = Min;
-        option.yAxis[0].interval = (Max-Min) / 5;
+        option.yAxis[1].max = Max;
+        // option.yAxis[1].min = 0;
+        option.yAxis[1].interval = (Max + Max * 0.1) / 5;
 
-        var Min2 = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list]),
-          Max2 = this.calMax([this.options[i].y_left_list, this.options[i].y_right_list])
-        option.yAxis[1].max = Max2;
-        option.yAxis[1].min = Min2;
-        option.yAxis[1].interval = (Max2-Min2) / 5;
+        // var Min2 = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list]),
+        //   Max2 = this.calMax([this.options[i].y_left_list, this.options[i].y_right_list])
+        // option.yAxis[1].max = Max2;
+        // option.yAxis[1].min = Min2;
+        // option.yAxis[1].interval = (Max2-Min2) / 5;
 
         if(this.options[i].core_unit.unit === 2){
           option.tooltip.formatter =  (data) => {
@@ -225,6 +259,11 @@ export default {
                     实际值:${_this.options[i].y_left_list[data[1].dataIndex]}%</br>
                     标准值:${_this.options[i].y_right_list[data[1].dataIndex]}%
                     </div>`;
+          }
+
+          option.series[0].itemStyle.normal.label.formatter = (params) => {
+
+            return params.data + '%'
           }
         }else{
           option.tooltip.formatter =  (data) => {
@@ -290,14 +329,16 @@ export default {
 <style scoped>
     #home{
         height: 100%;
+        width: 100%;
         overflow-y: scroll;
+        background-size: 100% 100%;
         background-image: url("~@/assets/数据概览/bj.png");
     }
 
     #charts{
         padding:1.88rem 3.75rem;
         display: grid;
-        grid-template-columns: repeat(4,23%);
+        grid-template-columns: repeat(3,30vw);
         grid-template-rows: repeat(3,15rem);
         grid-row-gap: 1.88rem;
         grid-column-gap: 2.5rem;
@@ -308,6 +349,10 @@ export default {
 
     #charts .charts-item{
 
+    }
+
+    .home3{
+      margin-left: 2rem !important;
     }
 
 </style>

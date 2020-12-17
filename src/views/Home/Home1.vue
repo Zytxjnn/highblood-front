@@ -42,7 +42,8 @@ export default {
   },
   methods:{
     async getContent(){   // 获取首页全部数据
-        const {data} = await this.$axios('http://highblood.chinacpc.mobi/apidata/getNumInfoByProvince');
+      // const {data} = await this.$axios('https://www.chinahc.org.cn');
+        const {data} = await this.$axios('https://www.chinahc.org.cn/apidata/getNumInfoByProvince');
         this.$store.state.content = data.content;
     },
   }
@@ -53,8 +54,10 @@ export default {
 <style scoped>
   .home{
     height: 100%;
+    width: 100%;
     overflow-y: scroll;
     background-image: url('../../assets/数据概览/bj.png');
+    background-size: 100% 100%;
   }
 
 

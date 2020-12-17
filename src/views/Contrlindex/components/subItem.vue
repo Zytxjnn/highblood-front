@@ -77,6 +77,7 @@ import {getCoreDetail} from '@/utils/api'
     },
     methods:{
       switchToConsortiumList(){ // 显示医联体列表
+        this.$store.state.core_name = this.data.core;
         this.$store.state.isConsortiumList = true;
       }
     },
@@ -135,12 +136,11 @@ import {getCoreDetail} from '@/utils/api'
     }
 
     .content{
-
         font-size: 0.8rem;
-        height: 3rem;
+        height: 2.5rem;
         display: flex;
         justify-content: space-between;
-
+        padding-left: 0.4rem;
     }
 
     .content>div{
@@ -154,7 +154,7 @@ import {getCoreDetail} from '@/utils/api'
 
     .content>div:not(:last-child):after{
         content: '';
-        right: -0.7rem;
+        right: -1.5rem;
         transform: translateY(50%);
 
         position: absolute;
@@ -164,12 +164,13 @@ import {getCoreDetail} from '@/utils/api'
         /*background-color: #000;*/
     }
 
-    .content>div .highlight{
+    .highlight{
         display: flex;
         justify-content: space-between;
         flex-direction: column;
         color:#008599;
-        font-size: 1rem;
+        font-size: 1.25rem;
+        font-weight: 800;
     }
 
     .icon-gengduo{

@@ -56,13 +56,15 @@
                             </div>
                             <div class="progress" v-for="(item,i) in scoreTrendData">
                                 <div class="progress-month">
-                                    {{item.month}}月
+                                    {{item.name}}
                                 </div>
-                                <!--                                <el-progress :class="'progress'+i"-->
-                                <!--                                             :stroke-width="20"-->
-                                <!--                                             :percentage="item.value"-->
-                                <!--                                             :format="format"-->
-                                <!--                                />-->
+                              <el-progress :class="'progress'+i"
+                                           :stroke-width="20"
+                                           :percentage="item.count"
+                                           :show-text="false"
+                                           :format="format"
+                              />
+                              <div>{{item.count}}</div>
                             </div>
                             <div class="filled-amount">
                                 <div class="filled-amount-icon">
@@ -70,7 +72,7 @@
                                     <div class="filled-amount-text">累计填报量</div>
                                 </div>
                                 <div class="filled-amount-up">
-                                    <div class="filled-amount-count">456</div>
+                                    <div class="filled-amount-count">{{ all_count }}</div>
                                     <div class="filled-amount-upIcon">
                                         <img src="~@/assets/MedicalConsortium/上升.png" alt="">
                                     </div>
@@ -133,8 +135,10 @@
     getCoreDetail,
     getHospitalList,
     getScoreInfo,
+    getCoreRank,
     getScoreListForHospital,
-    getTimeInfoByHospital} from '@/utils/api'
+    getTimeInfoByHospital,
+    get6Month} from '@/utils/api'
 
   export default {
     name: "Hospital",
@@ -223,7 +227,7 @@
           },
           {
             value:48,
-            name:'近六日填报量',
+            name:'近六月填报量',
             color:'#AB4ED7'
           },
         ],
@@ -320,6 +324,7 @@
             "count2":200
           }
         ],
+        all_count:0, // 累计填报量
         hospital_info:[]
       }
     },
@@ -339,6 +344,9 @@
 
       // 请求注册时间 通过认证时间
       this.getTimeInfoByHospital();
+
+      // 近六月填报趋势
+      this.get6Month();
 
       // 医联体列表 下拉框
       const params = new URLSearchParams();
@@ -369,12 +377,19 @@
         params.append('end',this.$store.state.end);
         this.$axios.post(getScoreInfo,params).then(res => {
           this.rank[0].value = res.data.data[0].score+'分';
-          this.rank[1].value = res.data.data[0].country_rank;
+          this.rank[1].value = res.data.data[0].city_rank;
           this.rank[2].value = res.data.data[0].province_rank;
-          this.rank[3].value = res.data.data[0].city_rank;
+          this.rank[3].value = res.data.data[0].country_rank;
         })
       },
-
+      get6Month(){
+        this.$axios.get(get6Month+`?type=1&org_id=${this.id}`).then(res => {
+            this.scoreTrendData = res.data.data.recent_month;
+            this.filledAmountCate[0].value = res.data.data.today_count;
+            this.filledAmountCate[1].value = res.data.data.recent_count
+            this.all_count = res.data.data.all_count;
+        })
+      },
       // getInfoList(){
       //   const params = new URLSearchParams();
       //   params.append('area_type',this.$store.state.area_type);
@@ -400,7 +415,7 @@
         params.append('end',this.$store.state.end);
 
 
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
+        this.$axios.post(getCoreRank,params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
 
@@ -414,7 +429,7 @@
           },
           title:{
             show:true,
-            text:'2019第四季度质控分数同比/环比图',
+            text:'近四月质控分数',
             textStyle:{
               fontSize:'16',
               fontWeight:500
@@ -679,6 +694,7 @@
     .progress{
         display: flex;
         justify-content: space-between;
+        padding-right: 1rem;
     }
 
     .filled-amount{

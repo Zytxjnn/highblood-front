@@ -1,12 +1,12 @@
 <template>
-    <div class="zkmap row-flex-start" style="width:100%;height:40rem">
+    <div class="zkmap row-flex-start" style="width:100%;height:90vh">
         <div class="left_map" id="left_map"
              v-loading='isLoading'
              element-loading-text="拼命加载中"
              element-loading-spinner="el-icon-loading"
              element-loading-background="rgba(0, 0, 0, 0.8)"  ></div>
         <div class="back" v-show="$store.state.province" @click="mapBack">地图返回</div>
-        <div class="back" v-show="$store.state.isConsortiumList" @click="IndexReturn">指标返回</div>
+          <div class="back" v-show="$store.state.isConsortiumList" @click="IndexReturn">指标返回</div>
     </div>
 </template>
 
@@ -18,7 +18,7 @@
   var provinces = ['shanghai', 'hebei', 'shanxi', 'neimenggu', 'liaoning', 'jilin', 'heilongjiang', 'jiangsu', 'zhejiang', 'anhui', 'fujian', 'jiangxi', 'shandong', 'henan', 'hubei', 'hunan', 'guangdong', 'guangxi', 'hainan', 'sichuan', 'guizhou', 'yunnan', 'xizang', 'shanxi1', 'gansu', 'qinghai', 'ningxia', 'xinjiang', 'beijing', 'tianjin', 'chongqing', 'xianggang', 'aomen', 'taiwan']
   var provincesText = ['上海', '河北', '山西', '内蒙古', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西', '海南', '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆', '北京', '天津', '重庆', '香港', '澳门', '台湾']
 
-  import {getCoreDetail} from "@/utils/api";
+  import {getCoreDetail,getCoreRank} from "@/utils/api";
 
   export default {
     created () {
@@ -253,7 +253,7 @@
         params.append('end',this.$store.state.end);
 
 
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
+        this.$axios.post(getCoreRank,params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
       },    // 获取排名信息

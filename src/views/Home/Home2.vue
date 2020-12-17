@@ -5,10 +5,10 @@
       <el-row>
         <el-col :span="6">
           <preButton/>
-          <div class="blChart"   v-loading='BlisLoding'
+          <div class="blChart"  v-loading='BlisLoding'
                element-loading-text="拼命加载中"
                element-loading-spinner="el-icon-loading"
-               element-loading-background="rgba(0, 0, 0, 0.8)">
+               element-loading-background="rgba(0, 0, 0, 0)">
             <Title title='病例填报状态' style="margin-bottom:0.5rem" />
             <div id="blChart" style="width: 95%;height:95%;"></div>
           </div>
@@ -32,7 +32,7 @@
         <el-col :span="12" >
           <div class="container">
              <div class="list">
-            <div class="item" v-for="item in data"
+            <div class="item" v-for="(item,i) in data"
                  v-loading='isCountLoding'
                  element-loading-text="拼命加载中"
                  element-loading-spinner="el-icon-loading"
@@ -42,7 +42,7 @@
                 </div>
                 <div class="info">
                   <div class="name">{{item.name}}</div>
-                  <div class="number"><span>{{item.number}}</span>家</div>
+                  <div class="number"><span>{{item.number}}</span>{{i === 2 ? '例' : '家'}}</div>
                 </div>
           </div>
           </div>
@@ -123,16 +123,20 @@ export default {
             y:'center',
             orient: 'vertical',
             textStyle:{
-              color:'#fff'
-            }
-
+              color:'#fff',
+              fontSize:16
+            },
+            itemGap:20
           },
           graphic:{
             type:"text",
-            left:"30%",
-            top:"45%",
+              // left:"30%",
+            left:'31%',
+            top:'center',
+              // top:"45%",
             style:{
             text:`填报总数
+
 12365例`,
             fill:"#fff",
             fontSize:16
@@ -146,12 +150,6 @@ export default {
               center: ["40s%", "50%"],
               radius: ['40%', '70%'],
               avoidLabelOverlap: false,
-              label: {
-                normal:{
-                  position:'outer',
-                  formatter:'{d}%'
-                }
-              },
               labelLine: {
                 show: true
               },
@@ -160,11 +158,11 @@ export default {
                 {value: 1113, name: '填报完成'},
                 {value: 1136, name: '已审核'},
                 {value: 736, name: '已归档'},
-                {value: 536, name: '诊断中'},
-                {value: 1136, name: '死亡'},
+                {value: 536, name: '诊断中'}
               ],
                label: {
                 normal: {
+                    position:'inner',
                     show: false
                 },
                 emphasis: {
@@ -208,14 +206,14 @@ export default {
     this.$store.state.currentDataIndex1 = 0;
     this.getScoreList(1);
 
-    this.getAllCount();
+    // this.getAllCount();
   },
   methods:{
     // 初始化 病例填报状态
     async initBlChart(province,city){
         let chart = this.echarts.init(document.getElementById('blChart'));
 
-        const {data} = await this.$axios.get(`http://newhyper.chinacpc.mobi/api/v1/qc/count`);
+        const {data} = await this.$axios.get(`http://newhyper.chinahc.org.cn/api/v1/qc/count`);
 
         this.BlisLoding = false;
 
@@ -224,10 +222,22 @@ export default {
           this.option.series[0].data[i].name =data.data.count[i].name;
         }
 
-        this.option.graphic.style.text = `填报总数
- ${data.data.all_count}例`;
+        this.option.graphic.style.text = ` 填报总数
+
+${data.data.all_count}例`;
+
+//       this.option.graphic.style.text = `填报总数
+//
+// 12365例`
 
       chart.setOption(this.option);
+
+
+      this.data[0].number = data.data.all_count;
+      this.data[1].number = data.data.today_org;
+      this.data[2].number = data.data.today_count;
+      this.isCountLoding = false;
+
     },
     LupdataRankInfo(i){
       this.$store.state.currentDataIndex1 = i-1;
@@ -246,13 +256,13 @@ export default {
 
       switch (this.$store.state.area_type) {
         case 1: // 请求全国数据
-          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
             this.$store.state.scoreList = res.data.data;
           });
           break;
         case 2: // 请求省级数据
           params.append('province',this.$store.state.province);
-          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
             this.$store.state.scoreList = res.data.data;
           });
           break;
@@ -262,17 +272,17 @@ export default {
           }else{
             params.append('city',this.$store.state.city);
           }
-          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
             this.$store.state.scoreList = res.data.data;
           });
           break;
       }
     },
     getAllCount(){
-      this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count').then(res => {
+      this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count').then(res => {
         this.data[0].number = res.data.data.all_count;
-        this.data[1].number = res.data.data.today_count;
-        this.data[2].number = res.data.data.today_org;
+        this.data[1].number = res.data.data.today_org;
+        this.data[2].number = res.data.data.today_count;
         this.isCountLoding = false;
       })
 
@@ -283,7 +293,7 @@ export default {
     '$store.state.province'(val){
       this.BlisLoding = true;
       this.isCountLoding = true;
-      this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
+      this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count',{
         params:{
           province:this.$store.state.province,
         }
@@ -315,7 +325,7 @@ export default {
       this.BlisLoding = true;
       if(val === ''){
         this.isCountLoding = true;
-        this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
+        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count',{
           params:{
             province:this.$store.state.province,
           }
@@ -339,7 +349,7 @@ export default {
           this.isCountLoding = false;
         })
       }else{
-        this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/count',{
+        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count',{
           params:{
             city:this.$store.state.city,
           }
@@ -375,8 +385,10 @@ export default {
 <style scoped>
   #home{
     height: 100%;
+    width: 100%;
     overflow-y: scroll;
     background-image: url('~@/assets/数据概览/bj.png');
+    background-size: 100% 100%;
   }
 
   .el-col-12,.el-col-6{
@@ -506,5 +518,11 @@ export default {
         padding-top: 2rem;
     }
 
+  .title{
+    display: flex;
+    line-height: 2rem;
+    justify-content: space-between;
+    align-items: center;
+  }
 
 </style>

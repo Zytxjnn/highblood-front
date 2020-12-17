@@ -75,6 +75,7 @@
 
     .title{
         display: flex;
+        line-height: 1.6rem;
         justify-content: space-between;
     }
     .methods{
@@ -84,10 +85,11 @@
     }
 
     .methods div{
-        text-align: center;
-        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 4rem;
-        height: 100%;
+
         box-sizing: border-box;
         opacity: 0.6;
         font-size: .88rem;

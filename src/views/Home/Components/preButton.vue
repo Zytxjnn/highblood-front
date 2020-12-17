@@ -1,5 +1,7 @@
 <template>
-    <div id="preButton" @click="switchPage"></div>
+    <div id="preButton" @click="switchPage"
+         :class="[$route.path === '/home3' ? 'home3' : '']"
+         v-show="!this.$store.state.sidebar.left"></div>
 </template>
 
 <script>
@@ -29,7 +31,7 @@
 
 <style scoped>
     #preButton{
-        z-index: 999;
+        z-index: 1;
         position: fixed;
         display: flex;
         justify-content: center;

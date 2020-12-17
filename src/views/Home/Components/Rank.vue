@@ -3,11 +3,11 @@
         <div class="rank-list">
             <div class="rank-item" v-show="showProvince" v-for="(item,index) in $store.state.content.pass_hospital_by_province">
                 <div class="item-area"><span :style="{'color':index<=2 ? indexColor[index]:''}">NO.{{index+1}}</span>{{item.province}}</div>
-                <div class="progress">
+                <div class="progress" style="color: #fff">
                     <el-progress
                             :style="[{width: item.num+'%'}]"
                             :stroke-width="15" :percentage="Number(item.num)"  :show-text="false"></el-progress>
-                    <div>{{item.num}}</div>
+                    <div class="score">{{item.num}}</div>
                 </div>
              </div>
             <div class="rank-item" v-show="!showProvince" v-for="(item,index) in $store.state.content.pass_hospital_by_city">
@@ -16,8 +16,9 @@
                     <el-progress
                             :style="[{width: item.num+'%'}]"
                             :stroke-width="15" :percentage="Number(item.num)"  :show-text="false"></el-progress>
-                    <div>{{item.num}}</div>
+                  <div class="score">{{item.num}}</div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -44,6 +45,7 @@
     #rank{
         height: 90%;
     }
+
     .rank-list{
         box-sizing: border-box;
         width: 100%;
@@ -61,6 +63,7 @@
         line-height: 1.875rem;
     }
     .el-progress{
+        color: #fff !important;
         margin-bottom: 0.625rem;
     }
 
@@ -71,6 +74,8 @@
 
     /deep/ .el-progress{
         width: 90% !important;
+      color: #fff !important;
+
     }
     /deep/ .el-progress-bar__inner{
         background: linear-gradient(90deg, #0477D5, #01D9FE) !important;
@@ -80,9 +85,8 @@
         width: 100% !important;
         background-color: #193F80 !important;
     }
-   
-</style>
 
-<style>
-
+    .score{
+      color:#fff;
+    }
 </style>

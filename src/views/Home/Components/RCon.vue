@@ -41,6 +41,7 @@
             bottom:-20,
             y:'bottom',
             textStyle:{
+              fontSize:20,
               color:'#fff'
             }
 
@@ -55,7 +56,8 @@
               label: {
                 normal:{
                   position:'outer',
-                  formatter:'{d}%'
+                  formatter:'{d}%',
+                  fontSize: 20
                 }
               },
               labelLine: {
@@ -143,5 +145,15 @@
     .youxia #title{
       width: 100%;
       text-align: left;
+      display: flex;
+      line-height: 1.6rem;
+      justify-content: space-between;
     }
+
+    .title{
+      display: flex;
+      line-height: 1.6rem;
+      justify-content: space-between;
+    }
+
 </style>

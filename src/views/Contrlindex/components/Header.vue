@@ -1,36 +1,43 @@
 <template>
     <div id="header">
-        <div :class="['title',title.length >= 15 ? 'mini' : '']">{{title}}高血压达标中心质控指标</div>
+        <div :class="['title',title.length >= 15 ? 'mini' : '']">
+          {{title}}
+<!--          {{ title.length >= 15  ?  '' : '高血压达标中心'}}-->
+          <span v-show="$route.path === '/medicalconsortium'">[医联体]</span>
+        </div>
         <div class="tools">
-            <div class="date"  @click="choseDate">
+          <div class="back" v-show="$route.path==='/medicalconsortium' || $route.path=== '/hospital'"  @click="back">返回</div>
+          <ControlRange v-show="$store.state.city" :type="1" />
+          <div class="date"  @click="choseDate">
 <!--                <div class="text">2020.02</div>-->
 <!--                <img src="~@/assets/质控指标/筛选日期.png" alt="">-->
-                <el-date-picker
-                        :editable="false"
-                        :clearable="false"
-                        ref="saveDateInput"
-                        v-model="dateValue"
-                        type="month"
-                        :placeholder="nowMonth"
-                        prefix-icon="i-prefix-icon"
-                        format="yyyy-MM"
-                        value-format="yyyy-MM"
-                        @change="dateChange">
-                </el-date-picker>
-            </div>
-            <div class="search" v-if="!isConsortium && !$store.state.isConsortiumList">
-                <input class="textinput" type="text" placeholder="搜索医院名称" @click.stop="showMedicalconsortium" @input="inputChange" />
-                <img src="~@/assets/质控指标/搜索医院.png" alt="">
-                <div class="HospitalJoinedList" v-show="isHospitalJoinedListShow"
-                     v-loading='isHospitalJoinedListLoading'
-                     element-loading-text="拼命加载中"
-                     element-loading-spinner="el-icon-loading"
-                     element-loading-background="rgba(0, 0, 0, 0.8)" >
-                    <div class="joined-item" v-for="item in HospitalJoinedList" @click="gotoMedicalconsortium(item)">
-                        {{item.hospital_name}}
-                    </div>
-                </div>
-            </div>
+              <el-date-picker
+                      :editable="false"
+                      :clearable="false"
+                      ref="saveDateInput"
+                      v-model="dateValue"
+                      type="month"
+                      :placeholder="nowMonth"
+                      prefix-icon="i-prefix-icon"
+                      format="yyyy-MM"
+                      value-format="yyyy-MM"
+                      @change="dateChange">
+              </el-date-picker>
+          </div>
+          <div class="search" v-if="!isConsortium && !$store.state.isConsortiumList">
+              <input class="textinput" type="text" placeholder="搜索医院名称" @click.stop="showMedicalconsortium" @input="inputChange" @compositionstart="flag = false" @compositionend="flag = true" />
+              <img src="~@/assets/质控指标/搜索医院.png" alt="">
+              <div class="HospitalJoinedList" v-show="isHospitalJoinedListShow"
+                   v-loading='isHospitalJoinedListLoading'
+                   element-loading-text="拼命加载中"
+                   element-loading-spinner="el-icon-loading"
+                   element-loading-background="rgba(0, 0, 0, 0.8)" >
+                  <div class="joined-item" v-for="item in HospitalJoinedList" @click="gotoMedicalconsortium(item)">
+                      {{item.hospital_name}}
+                  </div>
+              </div>
+          </div>
+
             <div class="consortium" v-if="isConsortium">
 <!--                <div class="text">医联体</div>-->
 <!--                <el-dropdown trigger="click"   @command="test">-->
@@ -43,23 +50,28 @@
 <!--                </el-dropdown>-->
                 <img @click.stop="dropdow" src="~@/assets/MedicalConsortium/箭头.png" alt="">
                     <div id="dropdow" v-show="isHospitalJoinedListShow2">
-                        <div class="dropdow-main" @click="backToConsort">{{this.$route.query.name}}医联体</div>
+                        <div class="dropdow-main" @click="backToConsort">医联体</div>
                         <div class="dropdow-item" @click="test({name:item.hospital_name,id:item.hospital_id,index:1})" v-for="(item,i) in hospitalList">{{item.hospital_name}}<div/>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
 <script>
     import {getHospitalList,getHospitalJoinedList} from '@/utils/api';
+    import Throttle from "@/utils/Throttle";
+    import ControlRange from "@/views/Contrlindex/components/ControlRange";
 
 
 
     export default {
     name: "Header",
+    components:{
+      ControlRange,
+
+    },
     props:{
       title:{
         type:String
@@ -67,7 +79,8 @@
       isConsortium:{
         type:Boolean,
         default:false
-      }
+      },
+
     },
     data(){
       return {
@@ -82,12 +95,18 @@
         isHospitalJoinedListLoading2:true,   // 医联体列表加载中
         isHospitalJoinedListShow2:false,   // 医联体列表是否显示
         dateValue:'2020年11月',
-        nowMonth:''
+        nowMonth:'',
+        flag:false,
+
       }
     },
       mounted() {
+        console.log(this.$route.path === '/medicalconsortium' || '/hospital');
+
         // const date = new Date().toLocaleDateString().substr(0,7).replace('/','-')
         this.nowMonth = '2020-11';
+
+        if(!this.isConsortium) return; // 不显示医联体下拉框，不进行多余请求
 
         const params = new URLSearchParams();
         params.append('area_type',1);
@@ -107,7 +126,6 @@
         test(e){
           this.$store.state.zkTitle = e;
           this.$store.state.area_type = 5;
-
 
           if(e.index === 0){
             this.$router.push({
@@ -171,7 +189,6 @@
         },
         inputChange(e){
           const name = e.currentTarget.value;
-
           this.isHospitalJoinedListShow = true;   // 显示列表
 
           const _this = this;
@@ -200,9 +217,17 @@
         dateChange(e){  // 选择日期
           this.$store.state.start = this.dateValue;
           this.$store.state.end = this.dateValue;
+        },
+        back(){ // 地图返回
+          if(this.$route.path=== '/hospital'){
+            this.$router.push(this.$store.state.hospital_joined_path)
+          }else{
+            this.$router.push('/controlindex')
+          }
+
         }
       },
-    watch:{
+      watch:{
       '$store.state.hospital_joined_id'(val){
           const params = new URLSearchParams();
           params.append('area_type',1);
@@ -232,7 +257,7 @@
     }
 
     .mini{
-        font-size: 1rem !important;
+        font-size: 1.5rem !important;
     }
 
     .tools{
@@ -266,17 +291,23 @@
         border:none;
         background-color: transparent;
         outline: none;
-        color:#A9DBEB;
-        font-size: 1.25rem;
-
+        color:#000;
+        font-size: 1rem;
+      font-weight: 800;
     }
 
     .tools .search,.textinput::placeholder{
         border:none;
         outline: none;
-        color:#A9DBEB;
-        font-size: 1.25rem;
+        color:#ccc;
+        font-size: 1rem;
     }
+
+    .joined-item{
+      font-weight: 400;
+    }
+
+
 
     .tools .search>img,.date>img,.consortium>img{
         cursor:pointer;
@@ -305,13 +336,18 @@
 
     #name{
         font-size: 1rem;
+
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
     #dropdow{
         overflow-y: scroll;
         top: 3rem;
         right: 0;
-        height: 8rem;
+        height: 12rem;
+      width: 14rem;
         position: absolute;
         font-size: 1rem;
         color:#8492a6;
@@ -343,16 +379,22 @@
 
     .dropdow-item,.dropdow-main{
         line-height: 36px;
-        padding: 0 20px;
+
         margin: 0;
         font-size: 14px;
         color: #606266;
         cursor: pointer;
         outline: none;
+        padding:0.6rem 1rem;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .dropdow-item:hover,.dropdow-main:hover{
         color: #1989fa;
+      background-color: #ecf5ff;
     }
 
     .HospitalJoinedList{
@@ -360,25 +402,27 @@
         z-index: 2;
         position: absolute;
         right: -2rem;
-        bottom: -15rem;
+        bottom: -23rem;
         width: 20rem;
-        height: 15rem;
-       background-color: #fff;
+        height: 23rem;
+        background-color: #fff;
         overflow-y: scroll;
         padding: 1rem 0;
         box-shadow: 0px 0px 5px 0px rgba(74, 182, 214, 0.23);
-        color:#008599;
-        border-radius: 1rem;
+        color:#606266;
+
         cursor:pointer;
     }
 
     .HospitalJoinedList>.joined-item{
-        padding:0 1rem;
+        padding:0.6rem 1rem;
         line-height: 2rem;
     }
 
     .HospitalJoinedList>.joined-item:hover{
-        background-color:#ccc;
+        color:#6ab5ff;
+        background-color: #ecf5ff;
+
     }
 
     /deep/ .el-input__inner{
@@ -410,5 +454,26 @@
         width: 2.5rem;
         background-image: url("~@/assets/质控指标/筛选日期.png");
         background-size: 100% 100%;
+    }
+
+    /deep/ .el-month-table td.today .cell {
+       color: #fff;
+       font-weight: 400;
+    }
+
+    .back{
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      background-image: url('~@/assets/质控指标/返回首页.png');
+      background-size:100% 100%;
+      width: 6.28rem;
+      height: 2.61rem;
+      user-select: none;
+      color:#fff;
+      cursor:pointer;
+      position: relative;
+      right: 20rem;
     }
 </style>

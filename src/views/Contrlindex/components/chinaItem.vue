@@ -50,7 +50,7 @@
       position: relative;
       display: flex;
       justify-content: space-between;
-      align-items:space-between;
+      align-items:center;
       box-sizing: border-box;
       margin: 0 2.5rem 1.88rem 0;
       width:100%;
@@ -66,6 +66,7 @@
         flex-direction: column;
         justify-content: space-between;
         width: 70%;
+        height: 100%;
     }
 
     .chinaItem .icon{

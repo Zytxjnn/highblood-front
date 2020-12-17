@@ -5,7 +5,6 @@
                 <div class="item-area"><span :style="{'color':i<=2 ? indexColor[i]:''}">NO.{{i+1}}</span>{{item.name}}</div>
                 <div class="progress">
                     <el-progress
-
                             :stroke-width="15" :percentage="item.count"  :show-text="false"></el-progress>
                     <div>{{item.count}}</div>
                 </div>
@@ -35,14 +34,15 @@
     },
     methods:{
       async getData(){
-        const {data} = await this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/rank');
+        const {data} = await this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank');
         this.data = data.data;
+
+
       },
     },
     watch:{
       '$store.state.province'(val){
-
-        this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/rank',{
+        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
           params:{
             province:this.$store.state.province,
           }
@@ -52,7 +52,7 @@
       },
       '$store.state.city'(val){
 
-        this.$axios.get('http://newhyper.chinacpc.mobi/api/v1/qc/rank',{
+        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
           params:{
             city:this.$store.state.city,
           }

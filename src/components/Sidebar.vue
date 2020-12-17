@@ -35,12 +35,12 @@ export default {
                 {
                     img:'../assets/SideBar/设置.png',
                     title:'设置',
-                    path:'/controlindex'
+                    path:''
                 },
                 {
                     img:'../assets/SideBar/退出登录.png',
                     title:'退出登录',
-                    path:'/controlindex'
+                    path:''
                 }
 
             ]
@@ -56,9 +56,11 @@ export default {
 </script>
 
 <style scoped>
+    #sidebar{
+      z-index: 999;
+    }
     .views{
         width:8rem;
-
         padding: 10px;
         position: fixed;
         top: 50%;
@@ -92,11 +94,10 @@ export default {
         display:flex;
         align-items: center;
         top: 50%;
-        transform:translateY(-5rem);
+        transform:translateY(-10vh);
         left: 8.02rem;
         width: 1.5rem;
-        height: 10rem;
-        background-color: #fff;
+        height: 20vh;
         box-shadow: 2px 0px 5px #cbd3ff;
         border-radius: 0 5rem 5rem 0;
 

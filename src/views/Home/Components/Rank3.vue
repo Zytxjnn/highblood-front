@@ -36,7 +36,7 @@
     },
     data(){
       return {
-        indexColor:['#FFCB3D','#FB28F4','#32D6FF']
+        indexColor:['#FB28F4','#FFCB3D','#32D6FF']
       }
     },
     created(){

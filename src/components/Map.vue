@@ -96,7 +96,7 @@
 
           echarts.registerMap(provinceAlphabet, s.data);
           const option = this.getMapOpt(provinceAlphabet)
-          map.setOption(option);
+          map.setOption(option,true);
 
           this.$store.state.isLoading1 = false;   // 地图加载完成
 
@@ -135,7 +135,7 @@
         map = echarts.init(dom)
         const option = this.getMapOpt()
         if (option && typeof option === 'object') {
-          map.setOption(option);
+          map.setOption(option,true);
 
           this.$store.state.isLoading1 = false;   // 初始化全国地图
         }
@@ -167,14 +167,14 @@
       async getContentByProvince(name){
         this.$store.state.province = name;
 
-        const {data} = await this.$axios.get(`http://highblood.chinacpc.mobi/apidata/getNumInfoByProvince?province=${name}`);
+        const {data} = await this.$axios.get(`https://www.chinahc.org.cn/apidata/getNumInfoByProvince?province=${name}`);
         this.$store.state.content = data.content;
 
 
       },
       async getContentByCity(name){
         this.$store.state.city = name;
-        const {data} = await this.$axios.get(`http://highblood.chinacpc.mobi/apidata/getNumInfoByProvince?province=${this.$store.state.province}&city=${name}`);
+        const {data} = await this.$axios.get(`https://www.chinahc.org.cn/apidata/getNumInfoByProvince?province=${this.$store.state.province}&city=${name}`);
         this.$store.state.content = data.content;
         console.log(data.content)
 
@@ -188,7 +188,7 @@
           if(this.historyPlaceRecord.count === 0){  // 返回到全国地图
             this.$store.state.sjTitle = '全国';   // 改变标题
 
-            const {data} = await this.$axios.get(`http://highblood.chinacpc.mobi/apidata/getNumInfoByProvince`);
+            const {data} = await this.$axios.get(`https://www.chinahc.org.cn/apidata/getNumInfoByProvince`);
             this.$store.state.content = data.content;
 
             this.initMap();
@@ -207,7 +207,7 @@
             axios.get('province/'+this.historyPlaceRecord.name+'.json').then(s => { // 返回到省级地图
               echarts.registerMap(this.historyPlaceRecord.name, s.data);
               const option = this.getMapOpt(this.historyPlaceRecord.name);
-              map.setOption(option);
+              map.setOption(option,true);
 
               this.$store.state.isLoading1 = false;
 

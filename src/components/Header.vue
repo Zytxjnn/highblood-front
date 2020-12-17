@@ -31,7 +31,7 @@
         background-image: url('../assets/数据概览/top.png');
         background-size:100vw 4.5rem;
         text-align: center;
-        font-size: 1.94rem;
+        font-size: 2.5rem;
         height: 4.5rem;
         line-height:4.5rem;
     }

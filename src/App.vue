@@ -23,15 +23,10 @@ export default {
 <style>
   #app{
     height: 100vh;
+    width: 100vw;
     /*background-image: url("../static/images/bg2.png");*/
     /*background-size: 100% 100%;*/
   }
-
-  div[data-v-a42c59e2]{
-    color:#fff;
-  }
-
-
 
   ::-webkit-scrollbar{
     width: 10px;

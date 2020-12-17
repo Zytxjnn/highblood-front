@@ -60,13 +60,15 @@
                             </div>
                             <div class="progress" v-for="(item,i) in scoreTrendData">
                                 <div class="progress-month">
-                                    {{item.month}}月
+                                    {{item.name}}
                                 </div>
-<!--                                <el-progress :class="'progress'+i"-->
-<!--                                                :stroke-width="20"-->
-<!--                                                :percentage="item.value"-->
-<!--                                                :format="format"-->
-<!--                            />-->
+                                <el-progress :class="'progress'+i"
+                                                :stroke-width="20"
+                                                :percentage="item.count"
+                                                :format="format"
+                                                :show-text="false"
+                                />
+                                <div>{{item.count}}</div>
                             </div>
                             <div class="filled-amount">
                                 <div class="filled-amount-icon">
@@ -74,7 +76,7 @@
                                     <div class="filled-amount-text">累计填报量</div>
                                 </div>
                                 <div class="filled-amount-up">
-                                    <div class="filled-amount-count">456</div>
+                                    <div class="filled-amount-count">{{ all_count }}</div>
                                     <div class="filled-amount-upIcon">
                                         <img src="~@/assets/MedicalConsortium/上升.png" alt="">
                                     </div>
@@ -142,13 +144,15 @@
   import Sidebar from "@/components/Sidebar";
   import echarts from 'echarts'
 
-import { getHospitalJoinedList,
-  getCoreDetail,
-  getHospitalList,
-  getCoreRank,
-  getTimeInfoByHospital,
-  getScoreInfo,
-  getScoreListForHospital} from '@/utils/api'
+  import {
+    getHospitalJoinedList,
+    getCoreDetail,
+    getHospitalList,
+    getCoreRank,
+    getTimeInfoByHospital,
+    getScoreInfo,
+    getScoreListForHospital, get6Month
+  } from '@/utils/api'
 
   export default {
     name: "MedicalConsortium",
@@ -165,22 +169,22 @@ import { getHospitalJoinedList,
         rank:[
           {
             name:'质控评分',
-            value:'123分',
+            value:'0',
             bcgImg:'controlScore'
           },
           {
             name:'市排名',
-            value:'123分',
+            value:'0',
             bcgImg:'rank1'
           },
           {
             name:'省排名',
-            value:'123分',
+            value:'0',
             bcgImg:'rank1'
           },
           {
             name:'全国排名',
-            value:'123分',
+            value:'0',
             bcgImg:'rank2'
           }
         ],  // 质控评分，市排名……
@@ -235,7 +239,7 @@ import { getHospitalJoinedList,
           },
           {
             value:48,
-            name:'近六日填报量',
+            name:'近六月填报量',
             color:'#AB4ED7'
           },
         ],
@@ -356,6 +360,9 @@ import { getHospitalJoinedList,
       this.getTimeInfoByHospital();  // 获取注册时间，认证时间
 
       this.getScoreInfo();// 获取医联体质控评分
+
+      this.get6Month()
+
     },
     methods:{
        getData(){    // 请求医联体信息
@@ -424,7 +431,7 @@ import { getHospitalJoinedList,
           },
           title:{
             show:true,
-            text:'2019第四季度质控分数同比/环比图',
+            text:'近四月质控分数',
             textStyle:{
               fontSize:'16',
               fontWeight:500
@@ -497,12 +504,20 @@ import { getHospitalJoinedList,
         params.append('end',this.$store.state.end);
         this.$axios.post(getScoreInfo,params).then(res => {
           this.rank[0].value = res.data.data[0].score+'分';
-          this.rank[1].value = res.data.data[0].country_rank;
+          this.rank[1].value = res.data.data[0].city_rank;
           this.rank[2].value = res.data.data[0].province_rank;
-          this.rank[3].value = res.data.data[0].city_rank;
+          this.rank[3].value = res.data.data[0].country_rank;
+          console.log(res.data.data)
         })
       },
-
+      get6Month() {
+        this.$axios.get(get6Month + `?type=2&org_id=${this.id}`).then(res => {
+          this.scoreTrendData = res.data.data.recent_month;
+          this.filledAmountCate[0].value = res.data.data.today_count;
+          this.filledAmountCate[1].value = res.data.data.recent_count
+          this.all_count = res.data.data.all_count;
+        })
+      }
     },
     watch:{
       '$store.state.start'(){
@@ -696,6 +711,7 @@ import { getHospitalJoinedList,
     .progress{
         display: flex;
         justify-content: space-between;
+        padding-right: 1rem;
     }
 
     .filled-amount{

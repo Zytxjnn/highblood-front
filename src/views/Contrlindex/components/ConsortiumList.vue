@@ -12,11 +12,11 @@
                     <div class="consortium-item" @click="goto(item.hospital,proName,item.city,item.hospital_id)" v-for="(item,i) in province">
                         <div class="item-title">{{item.hospital}}</div>
 
-                        <div class="item info">
+                        <div class="item info" v-if="item.all_count">
                             <div class="rank">
                                 <div class="info-title">排名</div>
                                 <div class="info-data">
-                                    <span class="highlight">
+                                    <span class="highli ght">
                                         {{item.rank}}
                                     </span>
                                     /{{item.count}}
@@ -40,6 +40,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div v-else>无数据</div>
                     </div>
                 </div>
             </el-collapse-item>
@@ -65,13 +66,15 @@
 
       if (this.$store.state.province){
         this.getDataByProvince();
-      }
-
-      if (this.$store.state.city){
+      }else if(this.$store.state.city){
         this.getDataByCity();
+      }else{
+        this.getData();
       }
 
-      this.getData();
+
+
+
     },
     methods:{
       getData(){
@@ -82,7 +85,7 @@
         params.append('end',this.$store.state.end);
         this.$axios.post(getHospitalJoinedListByCore,params).then(res => {
           this.data = res.data.data;
-          console.log(JSON.stringify(this.data) === '[]')
+
           if (JSON.stringify(this.data) === '[]') { // 如果不为空，则会执行到这一步，返回true
 
             this.show = true

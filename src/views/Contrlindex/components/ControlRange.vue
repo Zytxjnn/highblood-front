@@ -37,7 +37,7 @@
     methods:{
       sliderChange(e){
 
-        this.$store.state.contrast_area = e === 1 ? '全省' : '全国'
+        this.$store.state.contrast_area = e === 1 ? '本省' : '全国'
 
         this.getRank(e+1);
 
@@ -51,7 +51,7 @@
         params.append('city',this.$store.state.city);
         params.append('start',this.$store.state.start);
         params.append('end',this.$store.state.end);
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlIndex/getCoreRank',params).then(res => {
+        this.$axios.post(getCoreRank,params).then(res => {
           this.$store.state.zkRank = res.data.data;
         })
       },
@@ -90,9 +90,12 @@
 <style scoped>
     #range{
         width: 10rem;
-        position: fixed;
-        top: 0;
-        left: 50%;
+        position: relative;
+        right: 2rem;
+        top: -0.5rem;
+        /*position: fixed;*/
+        /*top: 0;*/
+        /*left: 50%;*/
     }
 
     .range-tip{
@@ -100,19 +103,34 @@
         color:#008599;
     }
 
+    /deep/.el-slider__marks-text{
+      transform: translate(-25px,5px);
+    }
+
     /deep/.el-slider__marks-text:nth-child(2){
         position: relative !important;
-        right:10% !important;
-        left: 10rem !important;
+
+        left: 9.5rem !important;
         width: 5rem;
         top: 1rem;
     }
 
-    /deep/.el-slider__marks-text:nth-child(3){
-        position: relative !important;
-        right:10% !important;
-        left: 10rem !important;
-        width: 5rem;
-        top: 1rem;
+
+
+    /deep/ .el-slider__runway{
+      height: 10px;
+      background-color: #409EFF;
+    }
+
+    /deep/ .el-slider__button{
+      width: 20px;
+      height: 20px;
+    }
+
+    /deep/ .el-slider__stop{
+      width: 12px;
+      height: 12px;
+      border:1px solid #409eff;
+      transform: translate(-5px,-2px);
     }
 </style>

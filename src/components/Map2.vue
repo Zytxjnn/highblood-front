@@ -88,7 +88,7 @@
 
           this.$store.state.isLoading2 = false;   // 地图加载完成
 
-          map.setOption(option);
+          map.setOption(option,true);
 
           map.off('click');    // 清除重复绑定的click事件
 
