@@ -7,7 +7,7 @@
       <nextButton/>
         <div class="youxia">
           <Title title="注册医院分类统计"  />
-          <div id="main" style="width: 85%;height:85%;"
+          <div id="main" style="width: 100%;height:100%;"
                v-loading='isLoading'
                element-loading-text="拼命加载中"
                element-loading-spinner="el-icon-loading"

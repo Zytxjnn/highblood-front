@@ -73,8 +73,6 @@
         return option
       },
       getProvinceMapOpt (provinceAlphabet,provincesText) {
-
-
         axios.get('province/' + provinceAlphabet + '.json').then((s) => {   // 请求地图文件
           this.$store.state.area_type = 2;
           this.$store.state.province = provincesText;
@@ -152,10 +150,15 @@
       },
       getScoreListByProvince(provincesText){
         const params = new URLSearchParams();
-        params.append('area_type',this.$store.state.area_type);
+
+        if(this.$store.state.currentDataIndex1 === 0){
+          params.append('area_type',1);
+        }else{
+          params.append('area_type',this.$store.state.area_type-1 >= 2 ? 1 : 2);
+        }
         params.append('data_type',this.$store.state.currentDataIndex1+1);
         params.append('province',provincesText);
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+        this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
           this.$store.state.scoreList = res.data.data;
 
         })
@@ -167,13 +170,17 @@
           params.append('area_type',2);
           params.append('data_type',2);
           params.append('province',this.$store.state.province);
+        }else if(this.$store.state.currentDataIndex1 === 0){
+          params.append('area_type',1);
+          params.append('data_type',1);
+          params.append('province',this.$store.state.city);
         }else{
           params.append('area_type',this.$store.state.area_type);
           params.append('data_type',this.$store.state.currentDataIndex1+1);
           params.append('city',cityText);
         }
 
-        this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+        this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
           this.$store.state.scoreList = res.data.data;
         })
       },
@@ -196,7 +203,7 @@
 
           params.append('area_type',this.$store.state.area_type);
           params.append('data_type',this.$store.state.currentDataIndex1+1);
-          this.$axios.post('http://gxyzkend.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
             this.$store.state.scoreList = res.data.data;
           });
 

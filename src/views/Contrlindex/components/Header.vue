@@ -135,7 +135,8 @@
               query:{
                 name:e.name,
                 id:e.id,
-                province:this.$route.query.province
+                province:this.$route.query.province,
+                city:this.$route.query.city,
               }
             }).catch(err => {})
 

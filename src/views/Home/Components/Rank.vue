@@ -1,5 +1,8 @@
 <template>
-    <div id="rank">
+    <div id="rank" v-loading='isLoading'
+         element-loading-text="拼命加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0)" >
         <div class="rank-list">
             <div class="rank-item" v-show="showProvince" v-for="(item,index) in $store.state.content.pass_hospital_by_province">
                 <div class="item-area"><span :style="{'color':index<=2 ? indexColor[index]:''}">NO.{{index+1}}</span>{{item.province}}</div>
@@ -32,11 +35,17 @@
     },
     data(){
       return {
-        indexColor:['#FFCB3D','#FB28F4','#32D6FF']
+        indexColor:['#FFCB3D','#FB28F4','#32D6FF'],
+        isLoading:true,
       }
     },
     created(){
-      
+      this.isLoading = $store.state.content || true;
+    },
+    watch:{
+      '$store.state.content'(){
+        this.isLoading = false;
+      }
     }
   }
 </script>
@@ -84,6 +93,10 @@
     /deep/ .el-progress-bar__outer{
         width: 100% !important;
         background-color: #193F80 !important;
+    }
+
+    /deep/ .el-loading-mask{
+      z-index: 10;
     }
 
     .score{

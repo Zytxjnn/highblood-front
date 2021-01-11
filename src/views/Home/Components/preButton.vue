@@ -1,7 +1,7 @@
 <template>
     <div id="preButton" @click="switchPage"
          :class="[$route.path === '/home3' ? 'home3' : '']"
-         v-show="!this.$store.state.sidebar.left"></div>
+></div>
 </template>
 
 <script>
@@ -31,18 +31,18 @@
 
 <style scoped>
     #preButton{
-        z-index: 1;
         position: fixed;
         display: flex;
         justify-content: center;
         align-items:center;
         width: 4.56rem;
-         top: 40vh;
+        top: 40vh;
         height: 4.56rem;
         background-image: url('~@/assets/数据概览/左.png');
         border-radius: 50%;
         cursor: pointer;
         margin: 2rem 0;
+        z-index: 88;
     }
 
 </style>

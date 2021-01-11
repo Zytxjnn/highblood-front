@@ -8,10 +8,7 @@
        </div>
        <preButton/>
         <div class="certification-number"
-         v-loading='isrankLoading'
-         element-loading-text="拼命加载中"
-         element-loading-spinner="el-icon-loading"
-         element-loading-background="rgba(0, 0, 0, 0.8)" >
+         >
             <div class="title" >
                 <Title title="通过认证数量排名" >
                 </Title>
@@ -89,7 +86,7 @@
         align-items: center;
         justify-content: center;
         width: 4rem;
-
+        cursor: pointer;
         box-sizing: border-box;
         opacity: 0.6;
         font-size: .88rem;

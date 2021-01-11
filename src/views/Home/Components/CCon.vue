@@ -38,7 +38,7 @@
              v-loading="$store.state.isLoading1"
              element-loading-text="拼命加载中"
              element-loading-spinner="el-icon-loading"
-             element-loading-background="rgba(0, 0, 0, 0.8)"
+             element-loading-background="rgba(0, 0, 0, 0)"
         ></div>
     </div>
 </template>
@@ -297,7 +297,9 @@ import Map from '@/components/Map'
     }
 
     .item .number span{
+          font-weight: bolder;
           font-size: 3rem;
+          color:#FCFF0C;
     }
 
     #chart{

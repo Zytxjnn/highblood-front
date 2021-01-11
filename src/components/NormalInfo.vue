@@ -4,7 +4,7 @@
             <div class="normal-title">
                 <img src="../assets/数据概览/通过.png" v-if="i % 2==0">
                 <img src="../assets/数据概览/建设中.png" v-else>
-                {{item.name}}</div>
+               <span> {{item.name}}</span></div>
             <div class="normal-count"><span>{{item.count}}</span>家</div>
         </div>
     </div>
@@ -58,17 +58,17 @@
 
 <style scoped>
     .normal-info{
-        box-sizing: border-box;
-        background-image:url('../assets/数据概览/线框.png') ;
-        display: flex;
-        height: 10.31rem;
-        width:100%;
-        flex-wrap: wrap;
-        padding: 0 1.25rem;
-        margin-bottom: 1.44rem ;
-         margin-top: 1.84rem ;
-        justify-content: space-between;
-        background-size: 100% 10.31rem;
+      box-sizing: border-box;
+      /*background-image:url('~@/assets/数据概览/线框.png') ;*/
+      display: flex;
+      height: 11.31rem;
+      width:100%;
+      flex-wrap: wrap;
+      padding: 0 1.25rem;
+      margin-top: 1rem;
+
+      justify-content: space-between;
+      background-size: 100% 100%;
     }
 
     .normal-item{
@@ -81,9 +81,12 @@
     .normal-item .normal-title{
         display: flex;
         align-items: center;
-        margin-top: 1.25rem;
-        font-size: .75rem;
+        margin-top: 1rem;
+        font-size: 1rem;
         color:#64B7F7;
+    }
+
+    .normal-title span{
     }
 
     .normal-title img{
@@ -91,12 +94,17 @@
     }
 
      .normal-item .normal-count{
-        
-         text-align: left;
+
+       display: flex;
+       padding-left: 4rem;
+       align-items: flex-end;
         color:#fff;
+
     }
 
     .normal-count span{
-        font-size: 1.75rem;
+      font-weight: 800;
+      font-size: 3rem;
+      margin-right: 0.2rem;
     }
 </style>

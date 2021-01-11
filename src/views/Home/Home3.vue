@@ -227,7 +227,6 @@ export default {
         // var Min = this.calMin([this.options[i].y_left_list, this.options[i].y_right_list])
           var Max = this.calMax([this.options[i].y_left_list])
         // var Max = Math.max.apply(null,this.options[i].y_left_list)
-        console.log(Max)
         option.yAxis[0].max = Max + Max * 0.1;
         option.yAxis[0].min = 0;
         option.yAxis[0].interval = (Max + Max * 0.1) / 5;

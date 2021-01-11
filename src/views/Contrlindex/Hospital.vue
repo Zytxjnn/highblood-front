@@ -562,7 +562,8 @@
 <style scoped>
     .container{
         background-color: #fafafa;
-        padding: 2.5rem 3.1rem;
+        -webkit-box-orient:vertical;
+        padding: 2.5rem 3.1rem !important;
         height: 90vh;
     }
 

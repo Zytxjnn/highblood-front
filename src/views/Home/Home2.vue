@@ -36,13 +36,13 @@
                  v-loading='isCountLoding'
                  element-loading-text="拼命加载中"
                  element-loading-spinner="el-icon-loading"
-                 element-loading-background="rgba(0, 0, 0, 0.8)">
+                 element-loading-background="rgba(0, 0, 0, 0)">
                 <div class="icon">
-                    <img src="@/assets/数据概览/医院总数.png" alt="">
+                    <img src="@/assets/数据概览/医院总数.png">
                 </div>
                 <div class="info">
                   <div class="name">{{item.name}}</div>
-                  <div class="number"><span>{{item.number}}</span>{{i === 2 ? '例' : '家'}}</div>
+                  <div class="number"><span>{{item.number}}</span>{{i === 2 || i === 0 ? '例' : '家'}}</div>
                 </div>
           </div>
           </div>
@@ -197,12 +197,12 @@ export default {
       rankData:[]
     }
   },
-  async mounted(){
+   mounted(){
     this.$store.state.province = '';
     this.$store.state.city = '';
     this.$store.state.sjTitle = '全国';
 
-    this.initBlChart();
+     this.initBlChart();
     this.$store.state.currentDataIndex1 = 0;
     this.getScoreList(1);
 
@@ -251,13 +251,18 @@ ${data.data.all_count}例`;
     getScoreList(data_type){
       const params = new URLSearchParams();
 
-      params.append('area_type',this.$store.state.area_type);
+      if(this.$store.state.currentDataIndex1 === 0){ // 全国的省
+        params.append('area_type',1);
+      }else{
+        params.append('area_type',this.$store.state.area_type);
+      }
       params.append('data_type',data_type);
 
       switch (this.$store.state.area_type) {
         case 1: // 请求全国数据
           this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
             this.$store.state.scoreList = res.data.data;
+            console.log(this.$store.state.scoreList)
           });
           break;
         case 2: // 请求省级数据
@@ -443,7 +448,9 @@ ${data.data.all_count}例`;
     }
 
     .item .number span{
+        font-weight: bolder;
         font-size: 3rem;
+        color:#FCFF0C;
     }
 
     .blChart{

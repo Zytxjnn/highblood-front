@@ -84,6 +84,7 @@
       // 显示各省地图，这里使用axios请求本地文件，provice文件夹存在的位置为public/province（旧版本是static）
       getProvinceMapOpt (provinceAlphabet,provincesText) {
 
+        this.$store.state.range1 = 0;
         this.$store.commit('isChina',false);    // 改变质控信息显示，为省级
 
         this.isLoading = true;
@@ -130,8 +131,6 @@
               this.$store.state.subItem = res.data.data;
             });
             // 获取质控指标区域指标 end
-
-
 
 
             this.getRank(2);
@@ -212,7 +211,7 @@
           return false;
         }
 
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(); // 本地信息
         this.$store.state.area_type = 2;
         this.$store.state.zkTitle = this.$store.state.province+'省';
 
@@ -226,6 +225,17 @@
           this.$store.state.subItem = res.data.data;
           this.$store.state.city = '';
         });
+
+        const params2 = new URLSearchParams();
+        params2.append('area_type',1)
+        params2.append('start',this.$store.state.start);
+        params2.append('end',this.$store.state.end);
+        this.$axios.post(getCoreDetail,params2).then(res => {
+          this.$store.state.infoList =  res.data.data
+        })
+
+
+
 
         // axios.get('province/'+this.historyPlaceRecord.name+'.json').then(s => { // 返回到省级地图
         //   echarts.registerMap(this.historyPlaceRecord.name, s.data)

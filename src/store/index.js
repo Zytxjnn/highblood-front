@@ -24,10 +24,10 @@ export default new Vuex.Store({
       left:false,
       right:false
     },
-    operatePage:{
-      left:true,
-      right:false
-    },
+    // operatePage:{
+    //   left:true,
+    //   right:false
+    // },
     start:'2020-11',  // 质控指标时间 start
     end:'2020-11',  //  质控指标时间 end
     zkRank:{},
@@ -36,6 +36,7 @@ export default new Vuex.Store({
     hospital_joined_id:null, // 质控指标 医联体id,
     hospitalList:[],
     hospital_joined_path:'',
+    range1:0
   },
   mutations: {
     setlRank(state,lRank){

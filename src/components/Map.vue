@@ -4,7 +4,7 @@
              v-loading='$store.state.isLoading1'
              element-loading-text="拼命加载中"
              element-loading-spinner="el-icon-loading"
-             element-loading-background="rgba(0, 0, 0, 0.8)"  ></div>
+             element-loading-background="rgba(0, 0, 0, 0)"  ></div>
         <div class="back" v-show="$store.state.province" @click="mapBack">返回</div>
     </div>
 </template>
@@ -76,8 +76,10 @@
           animationDuration: 2000,
           animationEasing: 'ExponentialOut'    //BounceOut
         }
+
         return option
       },
+
       // 显示中国地图
       // showChinaMap (data) {
       //   console.log(data);
@@ -191,9 +193,11 @@
             const {data} = await this.$axios.get(`https://www.chinahc.org.cn/apidata/getNumInfoByProvince`);
             this.$store.state.content = data.content;
 
-            this.initMap();
+
             this.historyPlaceRecord.name = '';
             this.$store.state.province = '';
+
+            this.initMap();
 
           }else{
 

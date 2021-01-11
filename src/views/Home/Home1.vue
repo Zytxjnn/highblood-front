@@ -35,6 +35,11 @@ export default {
     }
   },
   async created() {
+    this.$store.state.sjTitle = '全国';
+    this.$store.state.province = '';
+    this.$store.state.city = '';
+    this.$store.state.area_type = 1;
+
     await this.getContent();
   },
   beforeDestroy() {
@@ -42,7 +47,6 @@ export default {
   },
   methods:{
     async getContent(){   // 获取首页全部数据
-      // const {data} = await this.$axios('https://www.chinahc.org.cn');
         const {data} = await this.$axios('https://www.chinahc.org.cn/apidata/getNumInfoByProvince');
         this.$store.state.content = data.content;
     },

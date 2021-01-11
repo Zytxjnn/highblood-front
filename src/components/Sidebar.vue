@@ -70,19 +70,20 @@ export default {
         background-color: #fff;
         border-radius:0 1rem 1rem 0;
         box-shadow: 2px 0px 5px #cbd3ff;
+        z-index: 999;
     }
 
      
 
    
 
-    .title{
+    .title{z-index: 999;
         display: flex;
         padding:0 0.625rem;
         justify-content: space-between;
     }
 
-    .title .text{
+    .title .text{z-index: 999;
         flex:1;
         text-align:center;
     }
@@ -122,6 +123,7 @@ export default {
         flex-direction: column;
         align-items: center;
         padding: 10px;
+
     }
 
     .view:hover{
@@ -135,6 +137,7 @@ export default {
         background-color: #ccc;
         width: 80px;
         height: 80px;
+
     }
 
     .hide{

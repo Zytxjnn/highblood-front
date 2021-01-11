@@ -342,6 +342,9 @@
           '诊断尿白蛋白/肌酐比检测率','高血压达标率','高血压随访率','单片复方制剂使用率','高血压转诊率']
       }
     },
+    created() {
+      localStorage.setItem('hospital_joined_id',this.$route.query.id);
+    },
     mounted() {
 
       this.name = this.$route.query.name;
@@ -474,8 +477,8 @@
           }]
         };
         const params = new URLSearchParams();
-        params.append('data_type',2);
-        params.append('hospital_id',this.id);
+        params.append('data_type',1);
+        params.append('hospital_joined_id',this.id);
         this.$axios.post(getScoreListForHospital,params).then( res => {
           option.xAxis.data = res.data.data.x_list;
           option.series[0].data = res.data.data.y_list;
@@ -511,7 +514,7 @@
         })
       },
       get6Month() {
-        this.$axios.get(get6Month + `?type=2&org_id=${this.id}`).then(res => {
+        this.$axios.get(get6Month + `?type=1&org_id=${this.id}`).then(res => {
           this.scoreTrendData = res.data.data.recent_month;
           this.filledAmountCate[0].value = res.data.data.today_count;
           this.filledAmountCate[1].value = res.data.data.recent_count

@@ -1,6 +1,6 @@
 <template>
     <div id="range">
-        <el-slider v-model="value"
+        <el-slider v-model="$store.state.range1"
        :step="1" show-stops
         :max="type" :show-tooltip="false"
         @change="sliderChange"
