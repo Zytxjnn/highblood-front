@@ -1,5 +1,6 @@
 const baseUrl = 'http://hbqc.ccpmc.org/';
 
+const getScoreList = baseUrl + '/QualityControlScore/getScoreList';  // 数据概览获取质控分数排名
 const getCoreDetail = baseUrl + 'QualityControlIndex/getCoreDetail';  // 质控指标获取区域指标详情
 const getHospitalJoinedListByCore = baseUrl + 'QualityControlIndex/getHospitalJoinedListByCore';  // 质控指标获取某指标下的医联体
 const getHospitalJoinedList = baseUrl + 'Hospital/getHospitalJoinedList';  // 质控指标搜索医联体
@@ -15,6 +16,7 @@ const get6Month = 'http://newhyper.chinahc.org.cn/api/v1/qc/month'; // 质控指
 
 
 export {
+  getScoreList,
   getCoreDetail,
   getHospitalJoinedListByCore,
   getHospitalJoinedList,

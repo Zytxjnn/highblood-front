@@ -126,10 +126,11 @@
       }
     },
     mounted() {
-        this.getInfoList();
+      this.getInfoList();
     },
     methods:{
       async getInfoList(){
+        console.log('a')
         const params = new URLSearchParams();
         params.append('area_type',1);
         params.append('start',this.$store.state.start);
@@ -147,8 +148,6 @@
     watch:{
       '$store.state.start'(){
         this.getInfoList();
-
-
           const params  = new URLSearchParams();
           params.append('area_type',this.$store.state.area_type);
           params.append('start',this.$store.state.start);

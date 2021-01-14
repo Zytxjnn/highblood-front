@@ -12,7 +12,11 @@
 <script>
   import echarts from 'echarts'
   import china from 'echarts/map/json/china'
-  import axios from 'axios'
+  import axios from 'axios';
+  import {
+    getScoreList
+  } from '@/utils/api'
+
   echarts.registerMap('china', china);
 
   let map = {};
@@ -150,37 +154,48 @@
       },
       getScoreListByProvince(provincesText){
         const params = new URLSearchParams();
+        const index = this.$store.state.currentDataIndex1;
+        const province = this.$store.state.province;
+        const date_type = index +1;
 
-        if(this.$store.state.currentDataIndex1 === 0){
+        if(index === 0){
           params.append('area_type',1);
+          params.append('data_type',date_type);
+        }else if(index === 1){
+          params.append('area_type',2);
+          params.append('data_type',date_type);
+          params.append('province',province)
         }else{
-          params.append('area_type',this.$store.state.area_type-1 >= 2 ? 1 : 2);
+          params.append('area_type',2);
+          params.append('data_type',date_type);
+          params.append('province',province)
         }
-        params.append('data_type',this.$store.state.currentDataIndex1+1);
-        params.append('province',provincesText);
-        this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
-          this.$store.state.scoreList = res.data.data;
 
+        this.$axios.post(getScoreList,params).then(res => {
+          this.$store.state.scoreList = res.data.data;
         })
       },
       getScoreListByCity(cityText){
         const params = new URLSearchParams();
+        const index = this.$store.state.currentDataIndex1;
+        const province = this.$store.state.province;
+        const city = cityText;
+        const date_type = index +1;
 
-        if(this.$store.state.currentDataIndex1 === 1){
-          params.append('area_type',2);
-          params.append('data_type',2);
-          params.append('province',this.$store.state.province);
-        }else if(this.$store.state.currentDataIndex1 === 0){
+        if(index === 0){
           params.append('area_type',1);
-          params.append('data_type',1);
-          params.append('province',this.$store.state.city);
+          params.append('data_type',date_type);
+        }else if(index === 1){
+          params.append('area_type',2);
+          params.append('data_type',date_type);
+          params.append('province',province)
         }else{
-          params.append('area_type',this.$store.state.area_type);
-          params.append('data_type',this.$store.state.currentDataIndex1+1);
-          params.append('city',cityText);
+          params.append('area_type',3);
+          params.append('data_type',date_type);
+          params.append('city',city)
         }
 
-        this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+        this.$axios.post(getScoreList,params).then(res => {
           this.$store.state.scoreList = res.data.data;
         })
       },
@@ -216,6 +231,7 @@
           this.$store.state.sjTitle = this.$store.state.province;
 
           this.getScoreListByProvince(this.$store.state.province);
+
           this.$store.state.area_type = 2;
           this.$store.state.city = '';
 

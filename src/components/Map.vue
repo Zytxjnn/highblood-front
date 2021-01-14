@@ -138,9 +138,9 @@
         const option = this.getMapOpt()
         if (option && typeof option === 'object') {
           map.setOption(option,true);
-
           this.$store.state.isLoading1 = false;   // 初始化全国地图
         }
+
 
         map.off('click');
         map.on('click', (param) => {
@@ -178,7 +178,7 @@
         this.$store.state.city = name;
         const {data} = await this.$axios.get(`https://www.chinahc.org.cn/apidata/getNumInfoByProvince?province=${this.$store.state.province}&city=${name}`);
         this.$store.state.content = data.content;
-        console.log(data.content)
+
 
       },
       // 地图返回

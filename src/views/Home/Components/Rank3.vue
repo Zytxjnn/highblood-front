@@ -1,8 +1,8 @@
 <template>
     <div id="rank">
-        <div class="rank-list">
+        <div class="rank-list" v-show="$store.state.scoreList.length >0">
             <div class="rank-item" v-for="(item,index) in $store.state.scoreList">
-                <div class="item-area"><span :style="{'color':index<=2 ? indexColor[index]:''}">NO.{{index+1}}</span>{{item.name}}</div>
+                <div class="item-area" :title='item.name'><span :style="{'color':index<=2 ? indexColor[index]:''}">NO.{{index+1}}</span>{{item.name}}</div>
                 <div class="progress">
                     <el-progress
                             :style="[{width: item.score+'%'}]"
@@ -20,6 +20,7 @@
 <!--                </div>-->
 <!--            </div>-->
         </div>
+        <div class="nodata" v-show="$store.state.scoreList.length === 0">暂无数据</div>
     </div>
 </template>
 
@@ -62,11 +63,20 @@
     .rank-list::-webkit-scrollbar { width: 0 !important }
 
     .item-area{
-        font-size:1.25rem;
-        color:#CDCDCD;
-        height: 1.875rem;
-        line-height: 1.875rem;
+      font-size:1.1rem;
+      color:#CDCDCD;
+      height: 1.875rem;
+      line-height: 1.875rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
     }
+
+    .item-area span{
+      margin-right: .3rem;
+    }
+
     .el-progress{
         margin-bottom: 0.625rem;
     }
@@ -80,20 +90,29 @@
         width: 90% !important;
     }
     /deep/ .el-progress-bar__inner{
-        background: linear-gradient(90deg, #0477D5, #01D9FE) !important;
+      background: linear-gradient(90deg, #0477D5, #01D9FE) !important;
+      height: 12px;
     }
 
     /deep/ .el-progress-bar__outer{
-        width: 100% !important;
-        background-color: #193F80 !important;
+      width: 100% !important;
+      background-color: #193F80 !important;
+      height: 12px !important;
     }
 
     .score{
         color:#fff;
     }
 
-</style>
-
-<style>
-
+    .nodata{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      font-size: 5vh;
+      background: linear-gradient(92deg, #0072FF 0%, #00EAFF 48.8525390625%, #01AAFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
 </style>

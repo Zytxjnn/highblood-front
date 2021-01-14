@@ -38,7 +38,6 @@ import {getCoreDetail} from '@/utils/api'
       '$store.state.city'(){
         if(!this.$store.state.city){
           this.$store.state.contrast_area = '全国'
-          console.log(this.$store.state.area_type)
           const params = new URLSearchParams();
           params.append('area_type',1);
           params.append('start',this.$store.state.start);

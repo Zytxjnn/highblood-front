@@ -197,14 +197,14 @@ export default {
       rankData:[]
     }
   },
-   mounted(){
+  mounted(){
     this.$store.state.province = '';
     this.$store.state.city = '';
+    this.$store.state.area_type = 1;
     this.$store.state.sjTitle = '全国';
 
      this.initBlChart();
-    this.$store.state.currentDataIndex1 = 0;
-    this.getScoreList(1);
+     this.getScoreList(1)
 
     // this.getAllCount();
   },
@@ -249,39 +249,40 @@ ${data.data.all_count}例`;
         this.RisrankLoading = false;
     },
     getScoreList(data_type){
+
       const params = new URLSearchParams();
-
-      if(this.$store.state.currentDataIndex1 === 0){ // 全国的省
-        params.append('area_type',1);
-      }else{
-        params.append('area_type',this.$store.state.area_type);
-      }
-      params.append('data_type',data_type);
-
-      switch (this.$store.state.area_type) {
-        case 1: // 请求全国数据
-          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
-            this.$store.state.scoreList = res.data.data;
-            console.log(this.$store.state.scoreList)
-          });
+      const area_type = this.$store.state.area_type;
+      const province = this.$store.state.province;
+      const city = this.$store.state.city;
+      // 1省 2市 3医联体
+      switch (data_type){
+        case 1:
+          params.append('area_type',1);
+          params.append('data_type',1);
           break;
-        case 2: // 请求省级数据
-          params.append('province',this.$store.state.province);
-          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
-            this.$store.state.scoreList = res.data.data;
-          });
-          break;
-        case 3: // 请求市级数据
-          if (data_type == 2){
-            params.append('province',this.$store.state.province);
-          }else{
-            params.append('city',this.$store.state.city);
+        case 2:
+          params.append('data_type',2);
+          if(area_type === 1){
+            params.append('area_type',1);
+          }else if(area_type === 2 || area_type === 3){
+            params.append('area_type',2);
+            params.append('province',province);
           }
-          this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
-            this.$store.state.scoreList = res.data.data;
-          });
           break;
+        case 3:
+          params.append('area_type',area_type);
+          params.append('data_type',3);
+          if(area_type === 2){
+            params.append('province',province);
+          }else if(area_type === 3){
+            params.append('city',city);
+          }
+
+
       }
+      this.$axios.post('http://hbqc.ccpmc.org/QualityControlScore/getScoreList',params).then(res => {
+        this.$store.state.scoreList = res.data.data;
+      });
     },
     getAllCount(){
       this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count').then(res => {
@@ -298,14 +299,11 @@ ${data.data.all_count}例`;
     '$store.state.province'(val){
       this.BlisLoding = true;
       this.isCountLoding = true;
-      this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count',{
-        params:{
-          province:this.$store.state.province,
-        }
-      }).then(res => {
-        this.data[0].number = res.data.data.all_count;
-        this.data[1].number = res.data.data.today_count;
-        this.data[2].number = res.data.data.today_org;
+      const url = val ? `http://newhyper.chinahc.org.cn/api/v1/qc/count?province=${val}` : `http://newhyper.chinahc.org.cn/api/v1/qc/count`
+      this.$axios.get(url).then(res => {
+         this.data[0].number = res.data.data.all_count;
+        this.data[1].number = res.data.data.today_org;
+        this.data[2].number = res.data.data.today_count;
 
         let chart = this.echarts.init(document.getElementById('blChart'));
 
@@ -315,7 +313,7 @@ ${data.data.all_count}例`;
         }
 
         this.option.graphic.style.text = `填报总数
- ${res.data.data.all_count}例`;
+ ${res.data.data.count.reduce((pre,next) => pre + next.count, 0)}例`;
 
         chart.setOption(this.option);
 
@@ -328,16 +326,13 @@ ${data.data.all_count}例`;
     },
     '$store.state.city'(val){
       this.BlisLoding = true;
-      if(val === ''){
+      const url = val ? `http://newhyper.chinahc.org.cn/api/v1/qc/count?city=${val}` : `http://newhyper.chinahc.org.cn/api/v1/qc/count?province=${this.$store.state.province}`
+
         this.isCountLoding = true;
-        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count',{
-          params:{
-            province:this.$store.state.province,
-          }
-        }).then(res => {
+        this.$axios.get(url).then(res => {
           this.data[0].number = res.data.data.all_count;
-          this.data[1].number = res.data.data.today_count;
-          this.data[2].number = res.data.data.today_org;
+          this.data[1].number = res.data.data.today_org;
+          this.data[2].number = res.data.data.today_count;
           let chart = this.echarts.init(document.getElementById('blChart'));
 
           for(let i in res.data.data.count){
@@ -346,41 +341,14 @@ ${data.data.all_count}例`;
           }
 
           this.option.graphic.style.text = `填报总数
- ${res.data.data.all_count}例`;
+ ${res.data.data.count.reduce((pre,next) => pre + next.count, 0)}例`;
 
           chart.setOption(this.option);
 
           this.BlisLoding = false;
           this.isCountLoding = false;
         })
-      }else{
-        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/count',{
-          params:{
-            city:this.$store.state.city,
-          }
-        }).then(res => {
-          this.data[0].number = res.data.data.all_count;
-          this.data[1].number = res.data.data.today_count;
-          this.data[2].number = res.data.data.today_org;
 
-          let chart = this.echarts.init(document.getElementById('blChart'));
-
-          for(let i in res.data.data.count){
-            this.option.series[0].data[i].value =res.data.data.count[i].count;
-            this.option.series[0].data[i].name =res.data.data.count[i].name;
-          }
-
-          this.option.graphic.style.text = `填报总数
- ${res.data.data.all_count}例`;
-
-          chart.setOption(this.option);
-        })
-
-
-
-        this.BlisLoding = false;
-        this.isCountLoding = false;
-      }
 
     }
   }

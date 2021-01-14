@@ -2,10 +2,9 @@
   <div id="home">
       <Header :title="this.$store.state.sjTitle+ '高血压达标中心质控管理平台'" />
       <div id="charts">
-          <div class="charts-item" style="height: 100%;width:100%;" v-for="item in datas">
-
-          </div>
+          <div class="charts-item" style="height: 100%;width:100%;" v-for="item in datas" />
       </div>
+      <div class="nodata" v-show="options.length === 0">暂无数据</div>
       <Sidebar/>
       <pre-button/>
       <next-button/>
@@ -39,10 +38,12 @@ export default {
       }
     },
    async mounted() {
+
      await this.getChartsData();
    },
     methods:{
         async getChartsData(){
+
           const params = new URLSearchParams();
           params.append('area_type',this.$store.state.area_type);
           switch (this.$store.state.area_type) {
@@ -56,14 +57,14 @@ export default {
           this.$axios.post('http://hbqc.ccpmc.org/QualityControlIndex/getCoreDetailForDataView',params)
             .then(res => {
               this.options =  res.data.data;
+
               for(let i in this.datas){
                 let options =   this.setOptions(i);
                 let chart = this.echarts.init(document.getElementsByClassName('charts-item')[i]);
-                chart.setOption(options)
+                chart.setOption(options);
+                console.log()
               }
-            });
-
-
+          });
       },
       setOptions(i){
         const _this = this;
@@ -332,6 +333,7 @@ export default {
         overflow-y: scroll;
         background-size: 100% 100%;
         background-image: url("~@/assets/数据概览/bj.png");
+      position: relative;
     }
 
     #charts{
@@ -347,11 +349,29 @@ export default {
     }
 
     #charts .charts-item{
-
+      width: 30vw;
+      height: 15rem;
     }
 
     .home3{
       margin-left: 2rem !important;
+    }
+
+
+    .nodata{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      font-size: 5vh;
+      background: linear-gradient(92deg, #0072FF 0%, #00EAFF 48.8525390625%, #01AAFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
     }
 
 </style>

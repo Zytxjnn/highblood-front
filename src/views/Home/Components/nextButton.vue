@@ -9,7 +9,6 @@
     name: "nextButton",
     methods:{
       switchPage(){
-        console.log('aaa')
         let newNameNumbr = Number(this.$route.name.charAt(this.$route.name.length-1));
         if(newNameNumbr === 3){
           this.$message({

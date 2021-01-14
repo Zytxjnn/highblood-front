@@ -2,7 +2,7 @@
     <div id="rank">
         <div class="rank-list">
             <div class="rank-item" v-for="(item,i) in data[areaArr[index]]">
-                <div class="item-area"><span :style="{'color':i<=2 ? indexColor[i]:''}">NO.{{i+1}}</span>{{item.name}}</div>
+                <div class="item-area" :title='item.name'><span :style="{'color':i<=2 ? indexColor[i]:''}">NO.{{i+1}}</span>{{item.name}}</div>
                 <div class="progress">
                     <el-progress
                             :stroke-width="15" :percentage="item.count"  :show-text="false"></el-progress>
@@ -42,23 +42,38 @@
     },
     watch:{
       '$store.state.province'(val){
-        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
-          params:{
-            province:this.$store.state.province,
-          }
-        }).then(res => {
-          this.data = res.data.data;
-        })
+        if(val){
+          this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
+            params:{
+              province:this.$store.state.province,
+            }
+          }).then(res => {
+            this.data = res.data.data;
+          })
+        }else{
+          this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank').then(res => {
+            this.data = res.data.data;
+          })
+        }
       },
       '$store.state.city'(val){
-
-        this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
-          params:{
-            city:this.$store.state.city,
-          }
-        }).then(res => {
-          this.data = res.data.data;
-        })
+        if(val){
+          this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
+            params:{
+              city:this.$store.state.city,
+            }
+          }).then(res => {
+            this.data = res.data.data;
+          })
+        }else{
+          this.$axios.get('http://newhyper.chinahc.org.cn/api/v1/qc/rank',{
+            params:{
+              province:this.$store.state.province,
+            }
+          }).then(res => {
+            this.data = res.data.data;
+          })
+        }
       }
     }
   }
@@ -81,11 +96,20 @@
     .rank-list::-webkit-scrollbar { width: 0 !important }
 
     .item-area{
-        font-size:1.25rem;
+        font-size:1.1rem;
         color:#CDCDCD;
         height: 1.875rem;
         line-height: 1.875rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
     }
+
+    .item-area span{
+      margin-right: .3rem;
+    }
+
     .el-progress{
         margin-bottom: 0.625rem;
     }
@@ -101,11 +125,13 @@
     }
     /deep/ .el-progress-bar__inner{
         background: linear-gradient(90deg, #0477D5, #01D9FE) !important;
+      height: 12px !important;
     }
 
     /deep/ .el-progress-bar__outer{
         width: 100% !important;
         background-color: #193F80 !important;
+      height: 12px !important;
     }
    
 </style>

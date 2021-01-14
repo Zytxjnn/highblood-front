@@ -1,11 +1,12 @@
 <template>
     <div id="logs">
         <Title title="实时在线操作记录"/>
-        <div class="list">
+        <div class="list" v-if="logs.length > 0">
             <div class="item"  v-for="item in logs">
                 {{item.org_name | formatOrg_name}}于:{{item.add_time}}:新增病例
             </div>
         </div>
+        <div class="nodata" v-if="logs.length === 0">暂无数据</div>
     </div>
 </template>
 
@@ -43,8 +44,8 @@ import Title from "@/views/Home/Components/Title";
       '$store.state.province'(val){
         if(val){
           this.$axios.get(`http://newhyper.chinahc.org.cn/api/v1/qc/record?province=${val}`).then(res => {
+
             this.logs = res.data.data;
-            console.log(this.logs);
           })
         }else{
           this.getData();
@@ -54,12 +55,11 @@ import Title from "@/views/Home/Components/Title";
         if(val){
           this.$axios.get(`http://newhyper.chinahc.org.cn/api/v1/qc/record?city=${val}`).then(res => {
             this.logs = res.data.data;
-            console.log(this.logs);
           })
         }else{
-          this.$axios.get(`http://newhyper.chinahc.org.cn/api/v1/qc/record?city=${this.$store.state.city}`).then(res => {
+          this.$axios.get(`http://newhyper.chinahc.org.cn/api/v1/qc/record?province=${this.$store.state.province}`).then(res => {
+
             this.logs = res.data.data;
-            console.log(this.logs);
           })
         }
       }
@@ -89,6 +89,18 @@ import Title from "@/views/Home/Components/Title";
         width: 50%;
         color:#fff;
         margin: 0.63rem 0;
+    }
+
+    .nodata{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 15vh;
+      font-size: 5vh;
+      background: linear-gradient(92deg, #0072FF 0%, #00EAFF 48.8525390625%, #01AAFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
     }
 
 

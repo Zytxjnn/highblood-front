@@ -3,8 +3,8 @@
        <div class="time">{{date.toLocaleString('chinese', { hour12: false }).substring(9,19)}}</div>
        <div class="line"></div>
         <div class="date">
-           <span>{{date.toLocaleString('chinese', { hour12: false }).substring(0,11).replace(/\//g,'-')}}</span>
-           <span>{{day[date.getDay()]}}</span>
+           <span>{{date.toLocaleString('chinese', { hour12: false }).substring(0,10).replace(/\//g,'-')}}</span>
+          <span>{{day[date.getDay()]}}</span>
        </div>
     </div>
 </template>
